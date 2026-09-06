@@ -1,0 +1,4 @@
+dist/server/
+dist/.openai/
+.env
+node_modules/
