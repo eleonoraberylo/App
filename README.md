@@ -1,5 +1,16 @@
 # Afterglow — interface-first prototype
 
+## Dream sequence revision
+The screen opens as a dark, layered field of stars. Pointer movement or touch wakes the sky; particles gather into “Today I’m feeling …” over approximately 2.4 seconds. Clicking the prompt disperses light and reveals a searchable constellation of feeling names. Selecting a feeling changes the light and reveals the existing context and memory flow. Keyboard and reduced-motion paths bypass the opening choreography. Fonts: Cormorant Garamond and Jost through Google Fonts, with system fallbacks. All animation code is authored for this prototype; no movie artwork, characters, logos, soundtracks, or third-party animation code is included.
+
+### Precedent check, September 6, 2026
+- [Stellar: Mood Journal & Stars](https://apps.apple.com/us/app/stellar-mood-journal-stars/id6776367622): mood-colored journal stars, monthly constellations, galaxy archive. Strong overlap with the broad product metaphor.
+- [Offlog](https://synaphi.github.io/offlog/): describes a mood journal mapping feelings to a constellation. Also overlaps with the broad concept.
+- [Silk](https://weavesilk.com/): pointer-driven luminous generative art. Relevant to the interaction category, not a mood journal.
+- [Emotion Constellation](https://www.6seconds.org/2026/03/23/what-your-feelings-are-really-trying-to-tell-you/): emotional patterns represented as constellations in an interactive tool.
+
+This limited public-source search did not establish whether the exact star-to-input sequence exists elsewhere. It is not an exhaustive originality, patent, trademark, or legal clearance search. The temporary product name has not been cleared. US Copyright Office guidance distinguishes protected expression from unprotected ideas and systems: https://www.copyright.gov/what-is-copyright/ . Avoid claiming exclusive ownership of the stars-and-emotions concept.
+
 Vision: a quiet night-sky surface where naming an emotion leaves a colored trace. A short optional context note turns that check-in into a dated memory. The interaction is the product's core.
 
 ## Working now
