@@ -1,6 +1,6 @@
 # Afterglow — digital emotion journal prototype
 
-Current interface: monochrome character field with perspective motion, a clean text reveal, and free-form “Today I’m feeling” input. No visible emotion list, particle lettering, or instructional touch hint. Type your own words, continue to optional context, then save or request an AI reflection.
+Current interface: an 80-second opening before typing unlocks. A fine star field drifts, then forms the prompt from seconds 52–78. Keyboard, pointer, and reduced-motion paths all respect the 80-second gate. Reduced-motion visitors receive a static opening. No visible feeling list or instructional touch hint. Enter or the arrow automatically submits the entry for AI reflection; the adjacent notice explains the provider submission. Optional context can be submitted with Enter or its arrow; Shift+Enter adds a line. The separate Reflect with AI button is removed.
 
 ## AI connection
 The server implements POST /api/reflect using OpenAI's Responses API. It requires a platform-authenticated visitor, same-origin POST, explicit consent, bounded input, and configured OPENAI_API_KEY and OPENAI_MODEL runtime variables. Secrets must be configured server-side in Sites; never commit them or put them in the browser. No provider key or model is currently configured, so the interface explicitly reports that AI is unavailable.

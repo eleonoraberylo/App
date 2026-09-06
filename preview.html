@@ -6,6 +6,10 @@
 <title>Afterglow · Your emotional sky</title>
 <style>@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap');
 :root{color-scheme:dark;--accent:#b7cbbf;--bg:#050505;--ink:#f1f1ec;--muted:#979b99;font-family:'IBM Plex Mono',monospace;font-size:16px}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);min-height:100svh;overflow-x:hidden}button,input,textarea{font:inherit;color:inherit}button{background:none;border:0;cursor:pointer;min-height:44px}a{color:inherit}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:1px solid #fff;outline-offset:5px}[hidden]{display:none!important}#sky{position:fixed;inset:0;width:100%;height:100%;touch-action:pan-y}.vignette{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent,#0009)}header{position:fixed;z-index:3;top:0;left:0;right:0;padding:24px 4vw;display:flex;justify-content:space-between;align-items:center;opacity:0;visibility:hidden}header .brand{font-family:Georgia,serif;font-weight:bold;letter-spacing:-.05em;font-size:1.7rem;text-decoration:none}.brand-mark,.prototype{display:none}nav{display:flex;gap:25px}nav button{font-size:.75rem}nav svg{display:none}#count{margin-left:8px;color:var(--muted)}#main{position:relative;z-index:2;width:min(720px,calc(100% - 48px));min-height:100svh;margin:auto;padding:135px 0 140px;display:flex;align-items:center;opacity:0;visibility:hidden;pointer-events:none}.entry{width:100%;background:#05050505}.eyebrow{font-size:.75rem;letter-spacing:.12em;color:var(--muted);margin:0 0 32px}.prompt{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:clamp(2.5rem,5.3vw,4.4rem);letter-spacing:-.055em;line-height:1.1;display:block}.input-line{display:flex;align-items:center;border-bottom:1px solid #ffffff45;margin-top:7px;min-height:85px}.input-line input{width:100%;min-width:0;padding:5px 0 16px;border:0;background:none;font-size:clamp(1.7rem,4vw,3rem);letter-spacing:-.06em;outline:none}.input-line input::placeholder{color:#fff}.input-line button{font-size:2rem;padding:0 0 10px 20px}body[data-scene=prompt] #main,body[data-scene=context] #main{opacity:1;visibility:visible;pointer-events:auto;animation:resolve .65s cubic-bezier(.16,1,.3,1) both}body[data-scene=prompt] header,body[data-scene=context] header,body[data-scene=prompt] footer,body[data-scene=context] footer{opacity:1;visibility:visible}.wake-sky{position:fixed;z-index:4;inset:0;width:100%;height:100%;background:none;border:0}.wake-sky span{opacity:0}.wake-sky:focus-visible span{opacity:1}.wake-sky:focus-visible{outline-offset:-12px}#contextStep{margin-top:35px;animation:resolve .6s both}label{font-size:.875rem}textarea{display:block;width:100%;background:#050505a6;border:0;border-bottom:1px solid #ffffff38;border-radius:0;resize:vertical;padding:17px 0;line-height:1.7;margin:5px 0 20px;min-height:95px;max-height:360px;font-size:1rem}textarea::placeholder{color:#7f8382}.actions{display:flex;align-items:center;gap:25px;flex-wrap:wrap;margin:15px 0}.actions>button{font-size:.875rem;text-decoration:underline;text-underline-offset:6px}.primary{border:1px solid #bbbfb8;padding:13px 18px;font-size:.875rem;display:inline-flex;justify-content:space-between;gap:35px;min-height:47px;text-decoration:none!important;border-radius:0}.primary:hover{background:var(--ink);color:#050505}button:disabled{opacity:.45;cursor:not-allowed}footer{position:fixed;z-index:3;bottom:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:18px 4vw;font-size:.75rem;color:var(--muted);opacity:0;visibility:hidden;background:linear-gradient(transparent,#050505)}footer button{font-size:.75rem}#reflectionPanel{margin-top:36px;padding-top:25px;border-top:1px solid #fff;animation:resolve .65s both}.panel-heading{display:flex;justify-content:space-between;align-items:center;gap:20px}.panel-heading h2,dialog h2{font-family:Georgia,serif;font-weight:400;font-size:2rem;letter-spacing:-.04em;margin:0 0 20px}.panel-heading button{align-self:flex-start;font-size:1.6rem}.consent{display:flex;align-items:flex-start;gap:12px;line-height:1.6}.consent input{margin-top:4px;accent-color:#b6c9bb;min-width:16px}.small{font-size:.75rem;line-height:1.7;color:#9a9d99}#aiAvailability{font-size:.875rem;line-height:1.7;color:#b0b5ae}#aiOutput{white-space:pre-wrap;line-height:1.9;font-size:.9375rem}#aiOutput:empty{display:none}#feedbackActions{margin-top:22px;border-top:1px solid #ffffff25;padding-top:10px}#correctionBlock{margin-top:20px}dialog{width:min(590px,calc(100vw - 32px));max-height:86svh;background:#080808;color:var(--ink);border:1px solid #ffffff66;border-radius:0;padding:35px}dialog::backdrop{background:#000d}dialog p{font-size:.875rem;line-height:1.8;color:#b5b9b4}.close{position:absolute;top:12px;right:15px;width:40px;font-size:1.6rem}.dialog-top{padding-right:32px}.memory-dialog{width:min(720px,calc(100vw - 32px))}.storage-choice{padding:18px 0;border-top:1px solid #fff4;border-bottom:1px solid #fff4;margin:22px 0}.storage-choice label{display:flex;gap:12px;line-height:1.6}.storage-choice p{font-size:.75rem}.memory-card{padding:22px 0;border-bottom:1px solid #fff3}.memory-heading{display:flex;justify-content:space-between;align-items:start;gap:20px}.memory-heading h3{font-size:1rem;font-weight:400;overflow-wrap:anywhere;margin:0;max-width:65%}.memory-heading time{font-size:.75rem;color:#aaa}.memory-card p{white-space:pre-wrap;overflow-wrap:anywhere}.memory-delete{font-size:.75rem;text-decoration:underline}.empty-state{padding:25px 0}.empty-state h3{font-family:Georgia,serif;font-weight:400;font-size:1.6rem}.empty-star{display:none}.dialog-actions{display:flex;gap:20px;justify-content:flex-end}.danger{border:1px solid #b79c9c;padding:12px}.toast{position:fixed;z-index:10;bottom:90px;left:50%;transform:translateX(-50%);background:#080808;border:1px solid #bbb;padding:16px 22px;font-size:.875rem;width:max-content;max-width:calc(100vw - 32px)}@keyframes resolve{from{clip-path:inset(0 0 100% 0);transform:translateY(7px)}to{clip-path:inset(0);transform:translateY(0)}}@media(max-width:600px){header{padding:18px 24px}header .brand{font-size:1.45rem}nav{gap:15px}#main{padding:110px 0 125px;width:calc(100% - 48px)}.eyebrow{margin-bottom:24px}.prompt{font-size:2.6rem}.input-line{min-height:70px}.input-line input{font-size:1.8rem}footer{padding:12px 24px;flex-wrap:wrap;gap:4px}footer>span{order:3;width:100%;text-align:center;font-size:.75rem}dialog{padding:30px 22px}.memory-heading{flex-direction:column;gap:9px}.memory-heading h3{max-width:100%}.actions{gap:17px}}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.submission-note{margin:15px 0 0;font-size:.75rem;max-width:560px}body[data-scene=gathering] footer{visibility:visible;opacity:1}body[data-scene=gathering] footer>*{visibility:hidden}body[data-scene=gathering] footer #motionButton{visibility:visible;margin-left:auto;font-size:.75rem;opacity:.65}
+
+.wake-sky{pointer-events:none}
 </style>
 
 </head>
@@ -16,21 +20,23 @@
   <a class="brand" href="#" aria-label="Afterglow home"><span class="brand-mark" aria-hidden="true">✳</span>afterglow<span class="prototype">interface study</span></a>
   <nav aria-label="Main navigation"><button id="memoriesButton"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v17l-7-4-7 4z"/></svg>Memories <span id="count">0</span></button><button id="accountButton" class="account">Account <span aria-hidden="true">↗</span></button></nav>
 </header>
-<button id="wakeSky" class="wake-sky" aria-label="Wake the stars and name a feeling"><span>Enter your sky</span></button>
+<button id="wakeSky" class="wake-sky" tabindex="-1" aria-label="Wake the stars and name a feeling"><span>Enter your sky</span></button>
+<p id="introStatus" class="sr-only" role="status">The opening lasts 80 seconds. Typing becomes available afterwards.</p>
 <main id="main" inert>
  <section class="entry" aria-label="Name your feeling">
   <p class="eyebrow" id="stepLabel">01 / CHECK IN</p>
   <label for="emotionInput" class="prompt">Today I’m feeling</label>
-  <div class="input-line"><input id="emotionInput" maxlength="160" autocomplete="off" placeholder="…" aria-label="How you are feeling"><button id="continueButton" aria-label="Continue to context" hidden>↵</button></div>
+  <div class="input-line"><input id="emotionInput" maxlength="160" autocomplete="off" placeholder="…" aria-label="How you are feeling"><button id="continueButton" aria-label="Submit entry for AI reflection" hidden>↵</button></div>
+  <p class="small submission-note">Enter or ↵ sends this entry to OpenAI for a reflection.</p>
   <section id="contextStep" hidden>
    <label for="context">What happened?</label>
    <textarea id="context" rows="3" maxlength="4000" placeholder="Write what’s on your mind."></textarea>
-   <div class="actions"><button id="reflectButton" class="primary">Reflect with AI <span>↗</span></button><button id="saveMemory">Save moment</button></div>
+   <div class="actions"><button id="contextSubmit" class="primary" aria-label="Submit context for AI reflection">↵</button><button id="saveMemory">Save moment</button></div>
   </section>
   <section id="reflectionPanel" aria-labelledby="reflectionTitle" hidden>
    <div class="panel-heading"><h2 id="reflectionTitle">A second perspective.</h2><button id="closeReflection" aria-label="Close reflection">×</button></div>
    <p id="aiAvailability" role="status"></p>
-   <div id="consentBlock"><label class="consent"><input type="checkbox" id="aiConsent"> Send this entry to OpenAI for a reflection.</label><p class="small">Only this entry and any correction you add are sent. AI can misunderstand you; you decide what fits.</p><button id="askAI" class="primary">Get reflection ↗</button></div>
+
    <div id="aiOutput" role="status" aria-live="polite"></div>
    <div id="feedbackActions" hidden><p class="small">Does that fit your experience?</p><div class="actions"><button id="fits">Yes, that fits</button><button id="notQuite">Not quite</button></div></div>
    <div id="correctionBlock" hidden><label for="correction">What did it miss?</label><textarea id="correction" maxlength="1000" rows="2"></textarea><button id="reviseAI" class="primary">Reconsider ↗</button></div>
@@ -47,6 +53,8 @@
 <dialog id="accountDialog" aria-labelledby="accountTitle"><button class="close" data-close aria-label="Close account">×</button><p class="eyebrow">ACCOUNT PREVIEW</p><h2 id="accountTitle">Your own space.</h2><p>Account creation and sign-in are planned for the next version. This interface study does not collect email addresses or passwords.</p><p>For now, you can keep memories for this session, or choose to save them on this device. They won’t sync between devices.</p><button class="primary" data-close>Continue without an account</button></dialog>
 <dialog id="aboutDialog" aria-labelledby="aboutTitle"><button class="close" data-close aria-label="Close about">×</button><p class="eyebrow">ABOUT AFTERGLOW</p><h2 id="aboutTitle">A place to name it.</h2><p>Choose a feeling, add the context you want to remember, and come back to it later. Your choices shape the colors on the screen.</p><p>Use your own words. The palette is expressive, not a scientific scale. No feeling is scored as good or bad.</p><p>This prototype is a reflective journal, not a diagnostic tool or a mental health treatment. AI reflections are optional and may be inaccurate. Entries are not monitored.</p><p class="research">Research background: <a href="https://pubmed.ncbi.nlm.nih.gov/17576282/" target="_blank" rel="noopener noreferrer">Putting feelings into words (2007)</a>.</p><button class="primary" data-close>Back to my sky</button></dialog>
 <dialog id="deleteDialog" aria-labelledby="deleteTitle"><h2 id="deleteTitle">Delete this moment?</h2><p>This removes it from your collection and any device copy. This cannot be undone.</p><div class="dialog-actions"><button data-close>Keep it</button><button id="confirmDelete" class="danger">Delete moment</button></div></dialog>
+<script>globalThis.IntroTiming=Object.freeze({durationMs:80000,canType:elapsed=>elapsed>=80000,morph:elapsed=>Math.min(1,Math.max(0,(elapsed-52000)/26000))});
+</script>
 <script>'use strict';
 const $=id=>document.getElementById(id),input=$('emotionInput');
 const STORAGE_KEY='afterglow.memories.v1';
@@ -56,8 +64,8 @@ try{const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');if(Array.i
 function storageLabel(){$('storageLabel').textContent=deviceStorage?'Saved on this device':'Session only';$('rememberDevice').checked=deviceStorage;$('count').textContent=memories.length;}
 function persist(next){if(deviceStorage){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(next));}catch{notify('Could not save on this device. Your changes have not been applied.');return false;}}memories=next;storageLabel();return true;}
 function colorFor(name){const colors={peaceful:'#87bfa0',calm:'#87bfa0',stressed:'#c9bd7d',furious:'#b47373',angry:'#b47373',annoyed:'#c5a17e',sad:'#8fa6ba',hopeful:'#b0a9bb',affectionate:'#ba9eae'};return colors[name.toLowerCase().trim()]||'#b6c0b8';}
-function continueEntry(){if(!input.value.trim())return;selected={name:input.value.trim(),color:colorFor(input.value)};document.documentElement.style.setProperty('--accent',selected.color);$('contextStep').hidden=false;$('stepLabel').textContent='02 / CONTEXT';window.setDigitalScene?.('context');window.digitalPulse?.(selected.color);$('context').focus();}
-$('continueButton').onclick=continueEntry;input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();continueEntry();}});
+function continueEntry(){if(busy||!window.introReady||!input.value.trim())return;selected={name:input.value.trim(),color:colorFor(input.value)};document.documentElement.style.setProperty('--accent',selected.color);$('contextStep').hidden=false;$('stepLabel').textContent='02 / CONTEXT';window.setDigitalScene?.('context');window.digitalPulse?.(selected.color);$('reflectionPanel').hidden=false;askAI();}
+$('continueButton').onclick=continueEntry;input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){e.preventDefault();continueEntry();}});
 input.addEventListener('input',()=>{$('continueButton').hidden=!input.value.trim();if(selected)selected={name:input.value.trim(),color:colorFor(input.value)};clearReflection();});
 function clearReflection(){reflection='';$('aiOutput').textContent='';$('feedbackActions').hidden=true;$('correctionBlock').hidden=true;$('correction').value='';}
 $('context').addEventListener('input',clearReflection);
@@ -71,68 +79,96 @@ $('saveMemory').onclick=()=>{if(busy)return;if(!input.value.trim()){input.focus(
  const m={id:crypto.randomUUID(),emotion:input.value.trim(),context:$('context').value.trim(),at:new Date().toISOString()};
  if(reflection)m.reflection=reflection;
  if(!persist([m,...memories]))return;
- window.digitalPulse?.(selected?.color||'#b6c0b8');input.value='';$('context').value='';selected=null;$('contextStep').hidden=true;$('reflectionPanel').hidden=true;$('continueButton').hidden=true;$('aiConsent').checked=false;clearReflection();$('stepLabel').textContent='01 / CHECK IN';window.setDigitalScene?.('prompt');notify(deviceStorage?'Moment saved on this device.':'Moment saved for this session.');input.focus();};
+ window.digitalPulse?.(selected?.color||'#b6c0b8');input.value='';$('context').value='';selected=null;$('contextStep').hidden=true;$('reflectionPanel').hidden=true;$('continueButton').hidden=true;clearReflection();$('stepLabel').textContent='01 / CHECK IN';window.setDigitalScene?.('prompt');notify(deviceStorage?'Moment saved on this device.':'Moment saved for this session.');input.focus();};
 function renderMemories(){const list=$('memoryList');list.replaceChildren();if(!memories.length){const e=document.createElement('div');e.className='empty-state';const h=document.createElement('h3');h.textContent='Your collection starts here.';const p=document.createElement('p');p.textContent='Saved moments will appear here.';e.append(h,p);list.append(e);return;}
  for(const m of memories){const card=document.createElement('article');card.className='memory-card';const head=document.createElement('div');head.className='memory-heading';const h=document.createElement('h3');h.textContent=m.emotion;const t=document.createElement('time');t.dateTime=m.at;t.textContent=new Date(m.at).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});head.append(h,t);const p=document.createElement('p');p.textContent=m.context||'No context added.';card.append(head,p);
  if(typeof m.reflection==='string'){const a=document.createElement('details'),summary=document.createElement('summary'),text=document.createElement('p');summary.textContent='AI reflection';text.textContent=m.reflection;a.append(summary,text);card.append(a);}
  const b=document.createElement('button');b.className='memory-delete';b.textContent='Delete moment';b.onclick=()=>{pendingDelete=m.id;openDialog('deleteDialog');};card.append(b);list.append(card);}}
 $('confirmDelete').onclick=()=>{if(persist(memories.filter(m=>m.id!==pendingDelete))){renderMemories();$('deleteDialog').close();notify('Moment deleted.');pendingDelete=null;}};
 $('rememberDevice').onchange=e=>{try{if(e.target.checked)localStorage.setItem(STORAGE_KEY,JSON.stringify(memories));else localStorage.removeItem(STORAGE_KEY);deviceStorage=e.target.checked;storageLabel();}catch{e.target.checked=deviceStorage;notify('Could not change device storage.');}};
-$('reflectButton').onclick=async()=>{$('reflectionPanel').hidden=false;window.digitalPulse?.('#c2c9c4');$('aiAvailability').textContent='Checking AI connection…';$('consentBlock').hidden=true;
- try{const r=await fetch('/api/ai-status',{credentials:'same-origin'});if(!r.ok)throw Error();const a=await r.json();if(!a.configured){$('aiAvailability').textContent='AI reflections aren’t connected yet. Your entry has not been sent.';return;}$('aiAvailability').textContent='A reflection can suggest words for what you feel and a possible next step.';$('consentBlock').hidden=false;}catch{$('aiAvailability').textContent='AI reflections are unavailable here. Your entry has not been sent.';}};
 $('closeReflection').onclick=()=>{$('reflectionPanel').hidden=true;};
-function setBusy(v){busy=v;for(const id of ['askAI','reviseAI','saveMemory','emotionInput','context','correction'])$(id).disabled=v;}
-async function askAI(revise=false){if(busy)return;if(!$('aiConsent').checked){notify('Choose whether to send this entry before requesting a reflection.');return;}
+function setBusy(v){busy=v;for(const id of ['continueButton','contextSubmit','reviseAI','saveMemory','emotionInput','context','correction'])$(id).disabled=v;}
+async function askAI(revise=false){if(busy||!window.introReady)return;
  const feeling=input.value.trim(),context=$('context').value.trim(),correction=revise?$('correction').value.trim():'';
  if(!feeling){input.focus();return;}if(revise&&!correction){$('correction').focus();return;}
- setBusy(true);$('aiAvailability').textContent='Reflecting…';$('feedbackActions').hidden=true;
+ $('reflectionPanel').hidden=false;setBusy(true);$('aiAvailability').textContent='Reflecting…';$('feedbackActions').hidden=true;
  try{const r=await fetch('/api/reflect',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({feeling,context,correction,previous:revise?reflection:'',consent:true}),signal:AbortSignal.timeout(35000)});const d=await r.json();if(!r.ok)throw Error(d.error||'Reflection unavailable.');
  if(typeof d.reflection!=='string'||!d.reflection.trim())throw Error('No reflection was returned. Try again.');
  reflection=d.reflection;$('aiOutput').textContent=reflection;$('aiAvailability').textContent='AI reflection · you decide what fits';$('feedbackActions').hidden=false;$('correctionBlock').hidden=true;window.digitalPulse?.(selected?.color||'#b6c0b8');
  }catch(e){$('aiAvailability').textContent=e.name==='TimeoutError'?'The request timed out. You can try again.':e.message||'AI reflection unavailable. Try again.';}finally{setBusy(false);}}
-$('askAI').onclick=()=>askAI();$('reviseAI').onclick=()=>askAI(true);
+$('contextSubmit').onclick=()=>askAI();$('context').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();askAI();}});$('reviseAI').onclick=()=>askAI(true);
 $('fits').onclick=()=>{$('feedbackActions').hidden=true;notify('Reflection kept with this entry. Save the moment when you’re ready.');};
 $('notQuite').onclick=()=>{$('correctionBlock').hidden=false;$('correction').focus();};
 storageLabel();
 </script>
 <script>'use strict';
 const canvas=$('sky'),ctx=canvas.getContext('2d'),media=matchMedia('(prefers-reduced-motion: reduce)');
-let width=innerWidth,height=innerHeight,points=[],clock=0,last=0,frame=0,scene='sleeping',opening=-1,pulse=-1,tint='#cbd3cc',paused=media.matches;
-const mouse={x:.5,y:.5},camera={x:.5,y:.5},glyphs='01:/+−×=[]';
-function setup(){width=innerWidth;height=innerHeight;const d=Math.min(devicePixelRatio||1,2);canvas.width=width*d;canvas.height=height*d;ctx.setTransform(d,0,0,d,0,0);let seed=713;const rand=()=>{seed=seed*16807%2147483647;return seed/2147483647;};points=Array.from({length:Math.min(1400,Math.max(400,width*height/950))},()=>({x:rand()*2-1,y:rand()*2-1,z:.2+rand()*2.8,s:rand(),n:Math.floor(rand()*glyphs.length)}));draw(0);}
-function setScene(s){scene=s;document.body.dataset.scene=s;}window.setDigitalScene=setScene;
-function reveal(){setScene('prompt');$('main').inert=false;$('wakeSky').hidden=true;}
-function wake(instant=false){if(scene!=='sleeping')return;if(instant||paused){reveal();return;}opening=clock;setScene('gathering');}
+const startedAt=performance.now();
+let width=innerWidth,height=innerHeight,points=[],targets=[],clock=0,last=0,frame=0,scene='gathering',pulse=-1,tint='#cbd3cc',paused=media.matches;
+const mouse={x:.5,y:.5},camera={x:.5,y:.5};
+window.introReady=false;
+function setup(){width=innerWidth;height=innerHeight;const d=Math.min(devicePixelRatio||1,2);canvas.width=width*d;canvas.height=height*d;ctx.setTransform(d,0,0,d,0,0);
+ let seed=713;const rand=()=>{seed=seed*16807%2147483647;return seed/2147483647;};
+ points=Array.from({length:Math.min(2400,Math.max(1200,Math.floor(width*height/450)))},()=>({x:rand()*2-1,y:rand()*2-1,z:.3+rand()*2.7,s:rand(),phase:rand()*7}));
+ makeTargets();draw(0);
+}
+function makeTargets(){
+ const c=document.createElement('canvas');c.width=width;c.height=height;const g=c.getContext('2d');
+ const label=document.querySelector('.prompt'),r=label.getBoundingClientRect(),style=getComputedStyle(label);
+ g.font=style.fontWeight+' '+style.fontSize+' '+style.fontFamily;g.textAlign='left';g.textBaseline='top';g.fillStyle='white';
+ g.fillText(label.textContent,r.left,r.top);
+ const i=input.getBoundingClientRect(),is=getComputedStyle(input);g.font=is.fontSize+' '+is.fontFamily;g.fillText('…',i.left,i.top+5);
+ const pixels=g.getImageData(0,0,width,height).data;targets=[];
+ const top=Math.max(0,Math.floor(r.top)-8),bottom=Math.min(height,Math.ceil(i.bottom)+8);
+ for(let y=top;y<bottom;y+=2)for(let x=0;x<width;x+=2)if(pixels[(y*width+x)*4+3]>90)targets.push({x,y});
+ if(targets.length>points.length){const stride=targets.length/points.length;targets=points.map((_,i)=>targets[Math.floor(i*stride)]);}
+}
+function setScene(s){if(!window.introReady)return;scene=s;document.body.dataset.scene=s;}window.setDigitalScene=setScene;
+function unlock(){
+ const elapsed=performance.now()-startedAt;
+ if(!IntroTiming.canType(elapsed)){setTimeout(unlock,IntroTiming.durationMs-elapsed);return;}
+ window.introReady=true;scene='prompt';document.body.dataset.scene=scene;$('main').inert=false;$('wakeSky').hidden=true;$('introStatus').textContent='Ready. You can now type your entry.';
+ draw(0);
+}
 window.digitalPulse=color=>{tint=color;pulse=clock;};
-function draw(dt){camera.x+=(mouse.x-camera.x)*Math.min(1,dt*.002);camera.y+=(mouse.y-camera.y)*Math.min(1,dt*.002);
- const t=opening<0?0:(clock-opening)/1700,transition=scene==='gathering'?Math.sin(Math.min(1,t)*Math.PI):0;
- const kick=pulse<0?0:Math.max(0,1-(clock-pulse)/1250);
+function draw(dt){
+ const elapsed=performance.now()-startedAt,morph=window.introReady?1:IntroTiming.morph(elapsed),smooth=morph*morph*(3-2*morph);
+ camera.x+=(mouse.x-camera.x)*Math.min(1,dt*.001);camera.y+=(mouse.y-camera.y)*Math.min(1,dt*.001);
+ const kick=pulse<0?0:Math.max(0,1-(clock-pulse)/1800);
  ctx.clearRect(0,0,width,height);ctx.fillStyle='#040505';ctx.fillRect(0,0,width,height);
- const speed=scene==='context'?.000005:.000013;
- ctx.font='10px monospace';ctx.textBaseline='middle';
- for(const p of points){if(!paused){p.z-=dt*(speed+transition*.00038);if(p.z<.14)p.z=3;}
- const scale=1/(p.z+.22),dx=p.x*width*.58,dy=p.y*height*.58;
- let x=width/2+dx*scale-(camera.x-.5)*25*scale,y=height/2+dy*scale-(camera.y-.5)*15*scale;
- if(x<-25||x>width+25||y<-25||y>height+25)continue;
- const near=Math.max(0,1-Math.hypot(x-mouse.x*width,y-mouse.y*height)/180);
- const alpha=Math.min(.85,.06+p.s*.2+near*.3+transition*.22);
- ctx.globalAlpha=alpha;ctx.fillStyle=kick>0?tint:'#c9cfca';
- if(p.s>.66||transition>.2){ctx.fillText(glyphs[(p.n+Math.floor(clock/240+p.x*5))%glyphs.length]||'0',x,y);
- if(transition>.12){ctx.strokeStyle='#b8c7bc';ctx.lineWidth=.6;ctx.beginPath();ctx.moveTo(x,y+5);ctx.lineTo(x+(x-width/2)*transition*.08,y+(y-height/2)*transition*.08);ctx.stroke();}}
- else{ctx.fillRect(Math.round(x),Math.round(y),1,1);}
+ const intro=!window.introReady;
+ for(let j=0;j<points.length;j++){
+  const p=points[j];
+  if(!paused){p.z-=dt*(scene==='context'?.000003:.000007)*(1-smooth*.85);if(p.z<.18)p.z=3;}
+  const scale=1/(p.z+.22),baseX=width/2+p.x*width*.58*scale-(camera.x-.5)*16*scale,baseY=height/2+p.y*height*.58*scale-(camera.y-.5)*10*scale;
+  const target=targets[j];let x=baseX,y=baseY;
+  const near=Math.max(0,1-Math.hypot(baseX-mouse.x*width,baseY-mouse.y*height)/170);
+  let alpha=.09+Math.pow(p.s,3)*.42+near*.16;
+  if(intro&&target&&!paused){
+   const curve=Math.sin(smooth*Math.PI);
+   x=baseX+(target.x-baseX)*smooth+Math.sin(p.phase)*curve*width*.07;
+   y=baseY+(target.y-baseY)*smooth+Math.cos(p.phase)*curve*height*.04;
+   alpha=alpha*(1-smooth)+smooth*.75;
+   if(morph>.015&&morph<.94){ctx.globalAlpha=.06*curve;ctx.strokeStyle='#bcc6bd';ctx.lineWidth=.45;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+(target.x-x)*.012,y+(target.y-y)*.012);ctx.stroke();}
+  }
+  if(x<0||x>width||y<0||y>height)continue;
+  ctx.globalAlpha=alpha;ctx.fillStyle=kick>0?tint:'#d8ded8';
+  const size=intro&&target?.65:.6+Math.pow(p.s,6)*.65;
+  ctx.fillRect(x,y,size,size);
  }
- // Data lanes move through the field, then collapse into a clean, untextured input.
- if(transition>0||kick>0){const energy=Math.max(transition,kick*.55);ctx.strokeStyle=tint;ctx.lineWidth=.5;
- for(let i=0;i<9;i++){const offset=(i-4)*height*.09*(1-transition*.65),y=height*.5+offset;ctx.globalAlpha=energy*.09;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(width*.5,y-offset*.45);ctx.lineTo(width,y);ctx.stroke();}
- ctx.globalAlpha=energy*.16;ctx.fillStyle='#dae0da';const scan=(scene==='gathering'?Math.min(1,t):1-kick)*width;ctx.fillRect(scan,0,1,height);
- }
- ctx.globalAlpha=1;if(scene==='gathering'&&t>=1)reveal();
+ if(kick>0){ctx.globalAlpha=kick*.11;ctx.fillStyle=tint;ctx.fillRect(width*(1-kick),0,.7,height);}
+ ctx.globalAlpha=1;
 }
 function animate(now){const dt=Math.min(40,last?now-last:16);last=now;clock+=dt;draw(dt);if(!paused&&!document.hidden)frame=requestAnimationFrame(animate);}
-function motion(){cancelAnimationFrame(frame);last=0;if(paused&&scene==='gathering')reveal();$('motionButton').textContent=paused?'Resume motion':'Pause motion';$('motionButton').setAttribute('aria-pressed',String(paused));draw(0);if(!paused&&!document.hidden)frame=requestAnimationFrame(animate);}
-document.addEventListener('pointermove',e=>{mouse.x=e.clientX/width;mouse.y=e.clientY/height;wake();},{passive:true});
-$('wakeSky').addEventListener('pointerdown',()=>wake());$('wakeSky').onclick=()=>wake();
-document.addEventListener('keydown',e=>{if(scene==='sleeping'&&(e.key==='Tab'||e.key==='Enter'||e.key===' ')){e.preventDefault();wake(true);input.focus();}});
-$('motionButton').onclick=()=>{paused=!paused;motion();};media.addEventListener('change',e=>{paused=e.matches;motion();});document.addEventListener('visibilitychange',motion);window.addEventListener('resize',setup);setup();motion();if(paused)wake(true);
+function motion(){cancelAnimationFrame(frame);last=0;$('motionButton').textContent=paused?'Resume motion':'Pause motion';$('motionButton').setAttribute('aria-pressed',String(paused));draw(0);if(!paused&&!document.hidden)frame=requestAnimationFrame(animate);}
+document.body.dataset.scene='gathering';
+document.addEventListener('pointermove',e=>{mouse.x=e.clientX/width;mouse.y=e.clientY/height;},{passive:true});
+$('wakeSky').onclick=()=>{};
+$('motionButton').onclick=()=>{paused=!paused;motion();};
+media.addEventListener('change',e=>{paused=e.matches;motion();});
+document.addEventListener('visibilitychange',()=>{if(!window.introReady&&IntroTiming.canType(performance.now()-startedAt))unlock();motion();});
+window.addEventListener('resize',setup);setup();motion();
+document.fonts?.ready.then(()=>{if(!window.introReady)makeTargets();});
+setTimeout(unlock,IntroTiming.durationMs);
 </script>
 </body></html>

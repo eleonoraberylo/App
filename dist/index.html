@@ -14,21 +14,23 @@
   <a class="brand" href="#" aria-label="Afterglow home"><span class="brand-mark" aria-hidden="true">✳</span>afterglow<span class="prototype">interface study</span></a>
   <nav aria-label="Main navigation"><button id="memoriesButton"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v17l-7-4-7 4z"/></svg>Memories <span id="count">0</span></button><button id="accountButton" class="account">Account <span aria-hidden="true">↗</span></button></nav>
 </header>
-<button id="wakeSky" class="wake-sky" aria-label="Wake the stars and name a feeling"><span>Enter your sky</span></button>
+<button id="wakeSky" class="wake-sky" tabindex="-1" aria-label="Wake the stars and name a feeling"><span>Enter your sky</span></button>
+<p id="introStatus" class="sr-only" role="status">The opening lasts 80 seconds. Typing becomes available afterwards.</p>
 <main id="main" inert>
  <section class="entry" aria-label="Name your feeling">
   <p class="eyebrow" id="stepLabel">01 / CHECK IN</p>
   <label for="emotionInput" class="prompt">Today I’m feeling</label>
-  <div class="input-line"><input id="emotionInput" maxlength="160" autocomplete="off" placeholder="…" aria-label="How you are feeling"><button id="continueButton" aria-label="Continue to context" hidden>↵</button></div>
+  <div class="input-line"><input id="emotionInput" maxlength="160" autocomplete="off" placeholder="…" aria-label="How you are feeling"><button id="continueButton" aria-label="Submit entry for AI reflection" hidden>↵</button></div>
+  <p class="small submission-note">Enter or ↵ sends this entry to OpenAI for a reflection.</p>
   <section id="contextStep" hidden>
    <label for="context">What happened?</label>
    <textarea id="context" rows="3" maxlength="4000" placeholder="Write what’s on your mind."></textarea>
-   <div class="actions"><button id="reflectButton" class="primary">Reflect with AI <span>↗</span></button><button id="saveMemory">Save moment</button></div>
+   <div class="actions"><button id="contextSubmit" class="primary" aria-label="Submit context for AI reflection">↵</button><button id="saveMemory">Save moment</button></div>
   </section>
   <section id="reflectionPanel" aria-labelledby="reflectionTitle" hidden>
    <div class="panel-heading"><h2 id="reflectionTitle">A second perspective.</h2><button id="closeReflection" aria-label="Close reflection">×</button></div>
    <p id="aiAvailability" role="status"></p>
-   <div id="consentBlock"><label class="consent"><input type="checkbox" id="aiConsent"> Send this entry to OpenAI for a reflection.</label><p class="small">Only this entry and any correction you add are sent. AI can misunderstand you; you decide what fits.</p><button id="askAI" class="primary">Get reflection ↗</button></div>
+
    <div id="aiOutput" role="status" aria-live="polite"></div>
    <div id="feedbackActions" hidden><p class="small">Does that fit your experience?</p><div class="actions"><button id="fits">Yes, that fits</button><button id="notQuite">Not quite</button></div></div>
    <div id="correctionBlock" hidden><label for="correction">What did it miss?</label><textarea id="correction" maxlength="1000" rows="2"></textarea><button id="reviseAI" class="primary">Reconsider ↗</button></div>
@@ -45,6 +47,7 @@
 <dialog id="accountDialog" aria-labelledby="accountTitle"><button class="close" data-close aria-label="Close account">×</button><p class="eyebrow">ACCOUNT PREVIEW</p><h2 id="accountTitle">Your own space.</h2><p>Account creation and sign-in are planned for the next version. This interface study does not collect email addresses or passwords.</p><p>For now, you can keep memories for this session, or choose to save them on this device. They won’t sync between devices.</p><button class="primary" data-close>Continue without an account</button></dialog>
 <dialog id="aboutDialog" aria-labelledby="aboutTitle"><button class="close" data-close aria-label="Close about">×</button><p class="eyebrow">ABOUT AFTERGLOW</p><h2 id="aboutTitle">A place to name it.</h2><p>Choose a feeling, add the context you want to remember, and come back to it later. Your choices shape the colors on the screen.</p><p>Use your own words. The palette is expressive, not a scientific scale. No feeling is scored as good or bad.</p><p>This prototype is a reflective journal, not a diagnostic tool or a mental health treatment. AI reflections are optional and may be inaccurate. Entries are not monitored.</p><p class="research">Research background: <a href="https://pubmed.ncbi.nlm.nih.gov/17576282/" target="_blank" rel="noopener noreferrer">Putting feelings into words (2007)</a>.</p><button class="primary" data-close>Back to my sky</button></dialog>
 <dialog id="deleteDialog" aria-labelledby="deleteTitle"><h2 id="deleteTitle">Delete this moment?</h2><p>This removes it from your collection and any device copy. This cannot be undone.</p><div class="dialog-actions"><button data-close>Keep it</button><button id="confirmDelete" class="danger">Delete moment</button></div></dialog>
+<script src="intro-timing.js"></script>
 <script src="app.js"></script>
 <script src="dream.js"></script>
 </body></html>
