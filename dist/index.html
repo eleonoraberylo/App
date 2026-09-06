@@ -5,21 +5,20 @@
 <meta name="theme-color" content="#070a11"><meta name="description" content="Name what you feel, leave a trace, and keep the moments that matter. An interactive emotion journal.">
 <title>Afterglow · Your emotional sky</title>
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="dream.css">
 </head>
-<body>
+<body data-scene="sleeping">
 <canvas id="sky" aria-hidden="true"></canvas>
 <div class="vignette" aria-hidden="true"></div>
 <header>
   <a class="brand" href="#" aria-label="Afterglow home"><span class="brand-mark" aria-hidden="true">✳</span>afterglow<span class="prototype">interface study</span></a>
   <nav aria-label="Main navigation"><button id="memoriesButton"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v17l-7-4-7 4z"/></svg>Memories <span id="count">0</span></button><button id="accountButton" class="account">Account <span aria-hidden="true">↗</span></button></nav>
 </header>
-<main id="main">
-  <div class="eyebrow"><span></span> A MOMENT FOR YOURSELF</div>
-  <h1>What’s moving<br>through you?</h1>
-  <p class="intro">Find a word for it. Give it a little space.</p>
+<button id="wakeSky" class="wake-sky" aria-label="Wake the stars and name a feeling"><span>Enter your sky</span></button>
+<main id="main" inert>
   <section class="checkin" aria-label="Emotion check-in">
-    <div class="feeling-line"><label for="emotionInput">I am feeling</label><div class="picker-wrap"><input id="emotionInput" role="combobox" aria-expanded="false" aria-controls="emotionOptions" aria-autocomplete="list" autocomplete="off" placeholder="choose a feeling…"><button id="pickerToggle" aria-label="Show emotion choices" tabindex="-1">⌄</button></div></div>
-    <div id="picker" class="picker" hidden><div class="picker-heading">FIND THE WORD THAT FITS</div><ul id="emotionOptions" role="listbox" aria-label="Feelings"></ul><p id="noMatches" hidden>No matching feeling. Try “sad”, “calm”, or “uncertain”.</p></div>
+    <div class="feeling-line"><label for="emotionInput">Today I’m feeling</label><div class="picker-wrap"><input id="emotionInput" role="combobox" aria-expanded="false" aria-controls="emotionOptions" aria-autocomplete="list" autocomplete="off" placeholder="…"><button id="pickerToggle" aria-label="Show emotion choices" tabindex="-1">⌄</button></div></div>
+    <div id="picker" class="picker" hidden><div class="picker-heading">WHICH WORD FEELS CLOSEST?</div><ul id="emotionOptions" role="listbox" aria-label="Feelings"></ul><p id="noMatches" hidden>No matching feeling. Try “sad”, “calm”, or “uncertain”.</p></div>
     <div id="contextStep" class="context-step" hidden>
       <div class="selected-summary"><span id="selectedDot" class="dot"></span><span id="selectedMeaning"></span><button id="changeEmotion" class="text-button">Change</button></div>
       <label for="context">What happened? <span>Optional</span></label>
@@ -28,7 +27,7 @@
     </div>
   </section>
   <div class="quick-feelings" aria-label="Try a feeling"></div>
-  <div class="sky-hint"><span aria-hidden="true">✧</span> Move or touch the sky to leave a trace.</div>
+  <div class="sky-hint">Touch the words to begin.</div>
 </main>
 <footer><button id="aboutButton">About this space</button><span id="storageLabel">Session only · nothing sent to a server</span><button id="motionButton" aria-pressed="false">Pause motion <span aria-hidden="true">Ⅱ</span></button></footer>
 <div id="status" role="status" aria-live="polite" class="toast" hidden></div>
@@ -41,4 +40,5 @@
 <dialog id="aboutDialog" aria-labelledby="aboutTitle"><button class="close" data-close aria-label="Close about">×</button><p class="eyebrow">ABOUT AFTERGLOW</p><h2 id="aboutTitle">A place to name it.</h2><p>Choose a feeling, add the context you want to remember, and come back to it later. Your choices shape the colors on the screen.</p><p>The vocabulary draws on emotion-labeling research. The palette is expressive, not a scientific scale. No feeling is scored as good or bad.</p><p>This prototype is a reflective journal, not a diagnostic tool or a mental health treatment. It does not provide AI advice or monitor entries.</p><p class="research">Research background: <a href="https://pubmed.ncbi.nlm.nih.gov/17576282/" target="_blank" rel="noopener noreferrer">Putting feelings into words (2007)</a>.</p><button class="primary" data-close>Back to my sky</button></dialog>
 <dialog id="deleteDialog" aria-labelledby="deleteTitle"><h2 id="deleteTitle">Delete this moment?</h2><p>This removes it from your collection and any device copy. This cannot be undone.</p><div class="dialog-actions"><button data-close>Keep it</button><button id="confirmDelete" class="danger">Delete moment</button></div></dialog>
 <script src="app.js"></script>
+<script src="dream.js"></script>
 </body></html>
