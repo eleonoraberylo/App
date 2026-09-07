@@ -110,7 +110,7 @@ storageLabel();
 <script>'use strict';
 const canvas=$('sky'),ctx=canvas.getContext('2d'),media=matchMedia('(prefers-reduced-motion: reduce)');
 const startedAt=performance.now();
-let width=innerWidth,height=innerHeight,points=[],targets=[],clock=0,last=0,frame=0,scene='gathering',pulse=-1,tint='#cbd3cc',paused=media.matches;
+let width=innerWidth,height=innerHeight,points=[],targets=[],textLayer=null,clock=0,last=0,frame=0,scene='gathering',pulse=-1,tint='#cbd3cc',paused=media.matches;
 const mouse={x:.5,y:.5},camera={x:.5,y:.5};
 window.introReady=false;
 function setup(){width=innerWidth;height=innerHeight;const d=Math.min(devicePixelRatio||1,2);canvas.width=width*d;canvas.height=height*d;ctx.setTransform(d,0,0,d,0,0);
@@ -120,10 +120,11 @@ function setup(){width=innerWidth;height=innerHeight;const d=Math.min(devicePixe
 }
 function makeTargets(){
  const layer=document.createElement('canvas');layer.width=width;layer.height=height;const g=layer.getContext('2d'),r=input.getBoundingClientRect(),s=getComputedStyle(input);
- g.font=s.fontWeight+' '+s.fontSize+' '+s.fontFamily;g.letterSpacing=s.letterSpacing;g.textBaseline='alphabetic';g.fillStyle='#fff';
+ g.font=s.fontWeight+' '+s.fontSize+' '+s.fontFamily;g.letterSpacing=s.letterSpacing;g.textBaseline='alphabetic';g.fillStyle=getComputedStyle(input,'::placeholder').color;
  const metrics=g.measureText('Mg'),line=parseFloat(s.lineHeight)||parseFloat(s.fontSize)*1.2;
  const baseline=r.top+parseFloat(s.paddingTop)+(line+metrics.fontBoundingBoxAscent-metrics.fontBoundingBoxDescent)/2;
  g.fillText(input.placeholder,r.left+parseFloat(s.paddingLeft),Number.isFinite(baseline)?baseline:r.top+parseFloat(s.paddingTop)+parseFloat(s.fontSize));
+ textLayer=layer;
  const pixels=g.getImageData(0,0,width,height).data;targets=[];
  for(let y=Math.max(0,Math.floor(r.top));y<Math.min(height,r.bottom);y+=2)for(let x=Math.max(0,Math.floor(r.left));x<Math.min(width,r.right);x+=2)if(pixels[(y*width+x)*4+3]>100)targets.push({x,y});
  let seed=917;for(let i=targets.length-1;i>0;i--){seed=seed*16807%2147483647;const j=seed%(i+1);[targets[i],targets[j]]=[targets[j],targets[i]];}
@@ -159,9 +160,9 @@ function draw(dt){
   const near=Math.max(0,1-Math.hypot(baseX-mouse.x*width,baseY-mouse.y*height)/170);
   let alpha=.24+Math.pow(p.s,2)*.58+near*.16;
   alpha*=1-smooth*.35;
-  if(forming)alpha=(alpha*(1-gather)+.64*gather)*(1-Math.min(1,Math.max(0,(elapsed-13500)/1500)));
+  if(forming)alpha=Math.min(.5,alpha)*(1-gather)*(1-Math.min(1,Math.max(0,(elapsed-13500)/1500)));
   if(forming&&progress>0&&progress<1&&Number.isFinite(p.px)){
-   ctx.globalAlpha=alpha*.32;ctx.strokeStyle='#9ba8a1';ctx.lineWidth=.6;ctx.beginPath();ctx.moveTo(p.px,p.py);ctx.lineTo(x,y);ctx.stroke();
+   ctx.globalAlpha=alpha*.32;ctx.strokeStyle='#858b88';ctx.lineWidth=.6;ctx.beginPath();ctx.moveTo(p.px,p.py);ctx.lineTo(x,y);ctx.stroke();
   }
   p.px=x;p.py=y;
   if(x<0||x>width||y<0||y>height)continue;
@@ -170,9 +171,14 @@ function draw(dt){
    ctx.globalAlpha=Math.min(1,alpha*.85);ctx.strokeStyle='#cbd9d4';ctx.lineWidth=.45+Math.pow(p.s,8)*.4;
    ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-(baseX-width/2)*trail,y-(baseY-height/2)*trail);ctx.stroke();
   }
-  ctx.globalAlpha=Math.min(1,alpha);ctx.fillStyle=forming&&progress>.3?'#adb5b0':kick>0?tint:'#f3fff8';
+  ctx.globalAlpha=Math.min(1,alpha);ctx.fillStyle=forming?'#858b88':kick>0?tint:'#f3fff8';
   const size=forming?.95:.85+Math.pow(p.s,6)*.8;
-  ctx.fillRect(x,y,size,size);
+  if(forming){ctx.beginPath();ctx.arc(x,y,size*.5,0,Math.PI*2);ctx.fill();}else ctx.fillRect(x,y,size,size);
+ }
+ if(textLayer&&!paused&&elapsed<15000){
+  const reveal=Math.min(1,Math.max(0,(elapsed-9500)/3500));
+  const fade=1-Math.min(1,Math.max(0,(elapsed-13500)/1500));
+  ctx.globalAlpha=reveal*fade;ctx.drawImage(textLayer,0,0);
  }
  if(kick>0){ctx.globalAlpha=kick*.11;ctx.fillStyle=tint;ctx.fillRect(width*(1-kick),0,.7,height);}
  ctx.globalAlpha=1;
