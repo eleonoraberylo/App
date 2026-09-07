@@ -37,7 +37,7 @@ async function askAI(revise=false){if(busy||!window.introReady)return;
  $('reflectionPanel').hidden=false;setBusy(true);$('aiAvailability').textContent='Reflecting…';$('feedbackActions').hidden=true;
  try{const r=await fetch('/api/reflect',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({feeling,context,correction,previous:revise?reflection:'',consent:true}),signal:AbortSignal.timeout(35000)});const d=await r.json();if(!r.ok)throw Error(d.error||'Reflection unavailable.');
  if(typeof d.reflection!=='string'||!d.reflection.trim())throw Error('No reflection was returned. Try again.');
- reflection=d.reflection;$('aiOutput').textContent=reflection;$('aiAvailability').textContent='AI reflection · you decide what fits';$('feedbackActions').hidden=false;$('correctionBlock').hidden=true;window.digitalPulse?.(selected?.color||'#b6c0b8');
+ reflection=d.reflection;$('aiOutput').textContent=reflection;$('aiAvailability').textContent='';$('feedbackActions').hidden=false;$('correctionBlock').hidden=true;window.digitalPulse?.(selected?.color||'#b6c0b8');
  }catch(e){$('aiAvailability').textContent=e.name==='TimeoutError'?'The request timed out. You can try again.':e.message||'AI reflection unavailable. Try again.';}finally{setBusy(false);}}
 $('contextSubmit').onclick=()=>askAI();$('context').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();askAI();}});$('reviseAI').onclick=()=>askAI(true);
 $('fits').onclick=()=>{$('feedbackActions').hidden=true;notify('Reflection kept with this entry. Save the moment when you’re ready.');};

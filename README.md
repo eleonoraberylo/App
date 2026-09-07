@@ -1,11 +1,11 @@
 # Afterglow — digital emotion journal prototype
 
-Current interface: an 80-second opening before typing unlocks. A fine star field drifts, then forms the prompt from seconds 52–78. Keyboard, pointer, and reduced-motion paths all respect the 80-second gate. Reduced-motion visitors receive a static opening. No visible feeling list or instructional touch hint. Enter or the arrow automatically submits the entry for AI reflection; the adjacent notice explains the provider submission. Optional context can be submitted with Enter or its arrow; Shift+Enter adds a line. The separate Reflect with AI button is removed.
+Current interface: an 30-second opening before typing unlocks. A deep star field accelerates into fine radial streaks, then forms the prompt from seconds 18–28, holding it for the final 2 seconds. Keyboard, pointer, and reduced-motion paths all respect the 30-second gate. Reduced-motion visitors receive a static opening. No visible feeling list or instructional touch hint. Enter or the arrow automatically submits the entry for AI reflection; the adjacent notice explains the provider submission. Optional context can be submitted with Enter or its arrow; Shift+Enter adds a line. The separate Reflect with AI button is removed.
 
 ## AI connection
 The server implements POST /api/reflect using OpenAI's Responses API. It requires a platform-authenticated visitor, same-origin POST, explicit consent, bounded input, and configured OPENAI_API_KEY and OPENAI_MODEL runtime variables. Secrets must be configured server-side in Sites; never commit them or put them in the browser. No provider key or model is currently configured, so the interface explicitly reports that AI is unavailable.
 
-A generated reflection can suggest tentative feeling words and a small next step. “Not quite” lets the user provide a correction and request reconsideration. It never automatically assigns an emotion. AI text is labeled and is saved only when the user saves the moment. No clinical effectiveness claims are made.
+A generated reflection can suggest tentative feeling words and a small next step. “Not quite” lets the user provide a correction and request reconsideration. It never automatically assigns an emotion. The submission notice identifies AI; the response appears without a visible heading and and is saved only when the user saves the moment. No clinical effectiveness claims are made.
 
 Requests set store:false. This disables response storage in the Responses API; it is not a claim of zero provider retention. The app does not log entry text or persist it on the server. Provider data handling must be reviewed before wider release. The request limiter is per isolate and is suitable only as a prototype safeguard, not a global quota.
 

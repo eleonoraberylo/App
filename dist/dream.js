@@ -33,22 +33,32 @@ function draw(dt){
  camera.x+=(mouse.x-camera.x)*Math.min(1,dt*.001);camera.y+=(mouse.y-camera.y)*Math.min(1,dt*.001);
  const kick=pulse<0?0:Math.max(0,1-(clock-pulse)/1800);
  ctx.clearRect(0,0,width,height);ctx.fillStyle='#040505';ctx.fillRect(0,0,width,height);
- const intro=!window.introReady;
+ const intro=!window.introReady,seconds=elapsed/1000;
+ const flight=paused?0:Math.pow(Math.max(0,Math.sin(Math.PI*Math.min(1,seconds/19))),3);
+ const handoff=window.introReady?Math.max(0,1-(elapsed-IntroTiming.durationMs)/1400):1;
+ const angle=paused?0:Math.sin(Math.min(seconds,18)/18*Math.PI)*.22;
+ const ca=Math.cos(angle),sa=Math.sin(angle);
  for(let j=0;j<points.length;j++){
   const p=points[j];
-  if(!paused){p.z-=dt*(scene==='context'?.000003:.000007)*(1-smooth*.85);if(p.z<.18)p.z=3;}
-  const scale=1/(p.z+.22),baseX=width/2+p.x*width*.58*scale-(camera.x-.5)*16*scale,baseY=height/2+p.y*height*.58*scale-(camera.y-.5)*10*scale;
+  if(!paused){p.z-=dt*(scene==='context'?.000003:.000009+flight*.00016)*(1-smooth*.85);if(p.z<.18)p.z=3;}
+  const scale=1/(p.z+.22),rx=p.x*ca-p.y*sa,ry=p.x*sa+p.y*ca;
+  const baseX=width/2+rx*width*.58*scale-(camera.x-.5)*38*scale,baseY=height/2+ry*height*.58*scale-(camera.y-.5)*24*scale;
   const target=targets[j];let x=baseX,y=baseY;
   const near=Math.max(0,1-Math.hypot(baseX-mouse.x*width,baseY-mouse.y*height)/170);
   let alpha=.09+Math.pow(p.s,3)*.42+near*.16;
-  if(intro&&target&&!paused){
+  if((intro||handoff>0)&&target&&!paused){
    const curve=Math.sin(smooth*Math.PI);
    x=baseX+(target.x-baseX)*smooth+Math.sin(p.phase)*curve*width*.07;
    y=baseY+(target.y-baseY)*smooth+Math.cos(p.phase)*curve*height*.04;
-   alpha=alpha*(1-smooth)+smooth*.75;
+   alpha=(alpha*(1-smooth)+smooth*.85)*handoff;
    if(morph>.015&&morph<.94){ctx.globalAlpha=.06*curve;ctx.strokeStyle='#bcc6bd';ctx.lineWidth=.45;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+(target.x-x)*.012,y+(target.y-y)*.012);ctx.stroke();}
   }
   if(x<0||x>width||y<0||y>height)continue;
+  if(flight>.015&&!paused){
+   const trail=flight*(.012+.032*scale)*(1-smooth);
+   ctx.globalAlpha=alpha*.55;ctx.strokeStyle='#cbd9d4';ctx.lineWidth=.45+Math.pow(p.s,8)*.4;
+   ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-(baseX-width/2)*trail,y-(baseY-height/2)*trail);ctx.stroke();
+  }
   ctx.globalAlpha=alpha;ctx.fillStyle=kick>0?tint:'#d8ded8';
   const size=intro&&target?.65:.6+Math.pow(p.s,6)*.65;
   ctx.fillRect(x,y,size,size);

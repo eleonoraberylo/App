@@ -1,1 +1,1 @@
-globalThis.IntroTiming=Object.freeze({durationMs:80000,canType:elapsed=>elapsed>=80000,morph:elapsed=>Math.min(1,Math.max(0,(elapsed-52000)/26000))});
+globalThis.IntroTiming=Object.freeze({durationMs:30000,canType:elapsed=>elapsed>=30000,morph:elapsed=>Math.min(1,Math.max(0,(elapsed-18000)/10000))});

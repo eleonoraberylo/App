@@ -4,3 +4,5 @@
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.submission-note{margin:15px 0 0;font-size:.75rem;max-width:560px}body[data-scene=gathering] footer{visibility:visible;opacity:1}body[data-scene=gathering] footer>*{visibility:hidden}body[data-scene=gathering] footer #motionButton{visibility:visible;margin-left:auto;font-size:.75rem;opacity:.65}
 
 .wake-sky{pointer-events:none}
+
+#reflectionPanel{position:relative;padding-top:28px;border-top-color:#ffffff30}#reflectionPanel .panel-heading{position:absolute;right:0;top:0}#aiOutput{padding-right:24px;animation:response-in 1.2s ease both}#aiAvailability:empty{display:none}body[data-scene=prompt] #main,body[data-scene=context] #main{animation:response-in 1.4s ease both}@keyframes response-in{from{opacity:0}to{opacity:1}}
