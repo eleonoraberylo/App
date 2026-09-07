@@ -14,6 +14,8 @@
 #reflectionPanel{position:relative;padding-top:28px;border-top-color:#ffffff30}#reflectionPanel .panel-heading{position:absolute;right:0;top:0}#aiOutput{padding-right:24px;animation:response-in 1.2s ease both}#aiAvailability:empty{display:none}body[data-scene=prompt] #main,body[data-scene=context] #main{animation:response-in 1.4s ease both}@keyframes response-in{from{opacity:0}to{opacity:1}}
 
 .prompt{font-family:'IBM Plex Mono',monospace;font-size:clamp(1rem,3.35vw,2.2rem);font-weight:400;letter-spacing:.12em;text-transform:uppercase;line-height:1.5}.input-line input{font-family:'IBM Plex Mono',monospace;font-size:clamp(1.2rem,3vw,2rem);letter-spacing:.06em}header .brand,.panel-heading h2,dialog h2,.empty-state h3{font-family:'IBM Plex Mono',monospace;letter-spacing:.04em}.vignette{background:radial-gradient(ellipse at center,transparent,#0006)}body[data-scene=prompt] #main,body[data-scene=context] #main{animation-duration:1.077s}
+
+:root{--ink:#b1b5b3}.input-line input{color:#b1b5b3;font-size:clamp(1rem,2.7vw,1.65rem);letter-spacing:.035em}.input-line input::placeholder{color:#858b88;opacity:1}.input-line{border-bottom-color:#ffffff28}body[data-scene=gathering] #main{visibility:visible;animation:response-in 1.5s ease 13.5s both;pointer-events:none}body[data-scene=prompt] #main,body[data-scene=context] #main{animation:none;opacity:1}@media(prefers-reduced-motion:reduce){body[data-scene=gathering] #main{visibility:hidden;opacity:0}}
 </style>
 
 </head>
@@ -25,12 +27,12 @@
   <nav aria-label="Main navigation"><button id="memoriesButton"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v17l-7-4-7 4z"/></svg>Memories <span id="count">0</span></button><button id="accountButton" class="account">Account <span aria-hidden="true">↗</span></button></nav>
 </header>
 <button id="wakeSky" class="wake-sky" tabindex="-1" aria-label="Wake the stars and name a feeling"><span>Enter your sky</span></button>
-<p id="introStatus" class="sr-only" role="status">The opening lasts about 23 seconds. Typing becomes available afterwards.</p>
+<p id="introStatus" class="sr-only" role="status">The opening lasts 15 seconds. Typing becomes available afterwards.</p>
 <main id="main" inert>
  <section class="entry" aria-label="Name your feeling">
   <p class="eyebrow" id="stepLabel">01 / CHECK IN</p>
-  <label for="emotionInput" class="prompt">Today I’m feeling</label>
-  <div class="input-line"><input id="emotionInput" maxlength="160" autocomplete="off" placeholder="…" aria-label="How you are feeling"><button id="continueButton" aria-label="Submit entry for AI reflection" hidden>↵</button></div>
+  <label for="emotionInput" class="sr-only">Today I’m feeling</label>
+  <div class="input-line"><input id="emotionInput" maxlength="160" autocomplete="off" placeholder="Today I’m feeling" aria-label="How you are feeling"><button id="continueButton" aria-label="Submit entry for AI reflection" hidden>↵</button></div>
   <p class="small submission-note">Enter or ↵ sends this entry to OpenAI for a reflection.</p>
   <section id="contextStep" hidden>
    <label for="context">What happened?</label>
@@ -57,7 +59,7 @@
 <dialog id="accountDialog" aria-labelledby="accountTitle"><button class="close" data-close aria-label="Close account">×</button><p class="eyebrow">ACCOUNT PREVIEW</p><h2 id="accountTitle">Your own space.</h2><p>Account creation and sign-in are planned for the next version. This interface study does not collect email addresses or passwords.</p><p>For now, you can keep memories for this session, or choose to save them on this device. They won’t sync between devices.</p><button class="primary" data-close>Continue without an account</button></dialog>
 <dialog id="aboutDialog" aria-labelledby="aboutTitle"><button class="close" data-close aria-label="Close about">×</button><p class="eyebrow">ABOUT AFTERGLOW</p><h2 id="aboutTitle">A place to name it.</h2><p>Choose a feeling, add the context you want to remember, and come back to it later. Your choices shape the colors on the screen.</p><p>Use your own words. The palette is expressive, not a scientific scale. No feeling is scored as good or bad.</p><p>This prototype is a reflective journal, not a diagnostic tool or a mental health treatment. AI reflections are optional and may be inaccurate. Entries are not monitored.</p><p class="research">Research background: <a href="https://pubmed.ncbi.nlm.nih.gov/17576282/" target="_blank" rel="noopener noreferrer">Putting feelings into words (2007)</a>.</p><button class="primary" data-close>Back to my sky</button></dialog>
 <dialog id="deleteDialog" aria-labelledby="deleteTitle"><h2 id="deleteTitle">Delete this moment?</h2><p>This removes it from your collection and any device copy. This cannot be undone.</p><div class="dialog-actions"><button data-close>Keep it</button><button id="confirmDelete" class="danger">Delete moment</button></div></dialog>
-<script>globalThis.IntroTiming=Object.freeze({speed:1.3,durationMs:30000/1.3,canType:elapsed=>elapsed>=30000/1.3,morph:elapsed=>Math.min(1,Math.max(0,(elapsed*1.3-18000)/10000))});
+<script>globalThis.IntroTiming=Object.freeze({speed:2,durationMs:15000,canType:elapsed=>elapsed>=15000,settle:elapsed=>Math.min(1,Math.max(0,(elapsed-9500)/4000))});
 </script>
 <script>'use strict';
 const $=id=>document.getElementById(id),input=$('emotionInput');
@@ -108,24 +110,13 @@ storageLabel();
 <script>'use strict';
 const canvas=$('sky'),ctx=canvas.getContext('2d'),media=matchMedia('(prefers-reduced-motion: reduce)');
 const startedAt=performance.now();
-let width=innerWidth,height=innerHeight,points=[],targets=[],clock=0,last=0,frame=0,scene='gathering',pulse=-1,tint='#cbd3cc',paused=media.matches;
+let width=innerWidth,height=innerHeight,points=[],clock=0,last=0,frame=0,scene='gathering',pulse=-1,tint='#cbd3cc',paused=media.matches;
 const mouse={x:.5,y:.5},camera={x:.5,y:.5};
 window.introReady=false;
 function setup(){width=innerWidth;height=innerHeight;const d=Math.min(devicePixelRatio||1,2);canvas.width=width*d;canvas.height=height*d;ctx.setTransform(d,0,0,d,0,0);
  let seed=713;const rand=()=>{seed=seed*16807%2147483647;return seed/2147483647;};
  points=Array.from({length:Math.min(2400,Math.max(1200,Math.floor(width*height/450)))},()=>({x:rand()*2-1,y:rand()*2-1,z:.3+rand()*2.7,s:rand(),phase:rand()*7}));
- makeTargets();draw(0);
-}
-function makeTargets(){
- const c=document.createElement('canvas');c.width=width;c.height=height;const g=c.getContext('2d');
- const label=document.querySelector('.prompt'),r=label.getBoundingClientRect(),style=getComputedStyle(label);
- g.font=style.fontWeight+' '+style.fontSize+' '+style.fontFamily;g.textAlign='left';g.textBaseline='top';g.fillStyle='white';
- g.letterSpacing=style.letterSpacing;g.fillText(style.textTransform==='uppercase'?label.textContent.toUpperCase():label.textContent,r.left,r.top);
- const i=input.getBoundingClientRect(),is=getComputedStyle(input);g.font=is.fontSize+' '+is.fontFamily;g.letterSpacing=is.letterSpacing;g.fillText('…',i.left,i.top+5);
- const pixels=g.getImageData(0,0,width,height).data;targets=[];
- const top=Math.max(0,Math.floor(r.top)-8),bottom=Math.min(height,Math.ceil(i.bottom)+8);
- for(let y=top;y<bottom;y+=2)for(let x=0;x<width;x+=2)if(pixels[(y*width+x)*4+3]>90)targets.push({x,y});
- if(targets.length>points.length){const stride=targets.length/points.length;targets=points.map((_,i)=>targets[Math.floor(i*stride)]);}
+ draw(0);
 }
 function setScene(s){if(!window.introReady)return;scene=s;document.body.dataset.scene=s;}window.setDigitalScene=setScene;
 function unlock(){
@@ -136,13 +127,12 @@ function unlock(){
 }
 window.digitalPulse=color=>{tint=color;pulse=clock;};
 function draw(dt){
- const elapsed=performance.now()-startedAt,morph=window.introReady?1:IntroTiming.morph(elapsed),smooth=morph*morph*(3-2*morph);
+ const elapsed=performance.now()-startedAt,settle=IntroTiming.settle(elapsed),smooth=settle*settle*(3-2*settle);
  camera.x+=(mouse.x-camera.x)*Math.min(1,dt*.001);camera.y+=(mouse.y-camera.y)*Math.min(1,dt*.001);
  const kick=pulse<0?0:Math.max(0,1-(clock-pulse)/1800);
  ctx.clearRect(0,0,width,height);ctx.fillStyle='#040505';ctx.fillRect(0,0,width,height);
- const intro=!window.introReady,seconds=elapsed*IntroTiming.speed/1000;
+ const seconds=elapsed*IntroTiming.speed/1000;
  const flight=paused?0:Math.pow(Math.max(0,Math.sin(Math.PI*Math.min(1,seconds/19))),3);
- const handoff=window.introReady?Math.max(0,1-(elapsed-IntroTiming.durationMs)/(1400/IntroTiming.speed)):1;
  const angle=paused?0:Math.sin(Math.min(seconds,18)/18*Math.PI)*.22;
  const ca=Math.cos(angle),sa=Math.sin(angle);
  for(let j=0;j<points.length;j++){
@@ -150,16 +140,10 @@ function draw(dt){
   if(!paused){p.z-=dt*IntroTiming.speed*(scene==='context'?.000003:.000009+flight*.00016)*(1-smooth*.85);if(p.z<.18)p.z=3;}
   const scale=1/(p.z+.22),rx=p.x*ca-p.y*sa,ry=p.x*sa+p.y*ca;
   const baseX=width/2+rx*width*.58*scale-(camera.x-.5)*38*scale,baseY=height/2+ry*height*.58*scale-(camera.y-.5)*24*scale;
-  const target=targets[j];let x=baseX,y=baseY;
+  const x=baseX,y=baseY;
   const near=Math.max(0,1-Math.hypot(baseX-mouse.x*width,baseY-mouse.y*height)/170);
   let alpha=.24+Math.pow(p.s,2)*.58+near*.16;
-  if((intro||handoff>0)&&target&&!paused){
-   const curve=Math.sin(smooth*Math.PI);
-   x=baseX+(target.x-baseX)*smooth+Math.sin(p.phase)*curve*width*.07;
-   y=baseY+(target.y-baseY)*smooth+Math.cos(p.phase)*curve*height*.04;
-   alpha=(alpha*(1-smooth)+smooth*.98)*handoff;
-   if(morph>.015&&morph<.94){ctx.globalAlpha=.06*curve;ctx.strokeStyle='#bcc6bd';ctx.lineWidth=.45;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+(target.x-x)*.012,y+(target.y-y)*.012);ctx.stroke();}
-  }
+  alpha*=1-smooth*.35;
   if(x<0||x>width||y<0||y>height)continue;
   if(flight>.015&&!paused){
    const trail=flight*(.012+.032*scale)*(1-smooth);
@@ -167,7 +151,7 @@ function draw(dt){
    ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-(baseX-width/2)*trail,y-(baseY-height/2)*trail);ctx.stroke();
   }
   ctx.globalAlpha=Math.min(1,alpha);ctx.fillStyle=kick>0?tint:'#f3fff8';
-  const size=intro&&target?.9:.85+Math.pow(p.s,6)*.8;
+  const size=.85+Math.pow(p.s,6)*.8;
   ctx.fillRect(x,y,size,size);
  }
  if(kick>0){ctx.globalAlpha=kick*.11;ctx.fillStyle=tint;ctx.fillRect(width*(1-kick),0,.7,height);}
@@ -182,7 +166,6 @@ $('motionButton').onclick=()=>{paused=!paused;motion();};
 media.addEventListener('change',e=>{paused=e.matches;motion();});
 document.addEventListener('visibilitychange',()=>{if(!window.introReady&&IntroTiming.canType(performance.now()-startedAt))unlock();motion();});
 window.addEventListener('resize',setup);setup();motion();
-document.fonts?.ready.then(()=>{if(!window.introReady)makeTargets();});
 setTimeout(unlock,IntroTiming.durationMs);
 </script>
 </body></html>

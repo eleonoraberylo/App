@@ -15,12 +15,12 @@
   <nav aria-label="Main navigation"><button id="memoriesButton"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v17l-7-4-7 4z"/></svg>Memories <span id="count">0</span></button><button id="accountButton" class="account">Account <span aria-hidden="true">↗</span></button></nav>
 </header>
 <button id="wakeSky" class="wake-sky" tabindex="-1" aria-label="Wake the stars and name a feeling"><span>Enter your sky</span></button>
-<p id="introStatus" class="sr-only" role="status">The opening lasts about 23 seconds. Typing becomes available afterwards.</p>
+<p id="introStatus" class="sr-only" role="status">The opening lasts 15 seconds. Typing becomes available afterwards.</p>
 <main id="main" inert>
  <section class="entry" aria-label="Name your feeling">
   <p class="eyebrow" id="stepLabel">01 / CHECK IN</p>
-  <label for="emotionInput" class="prompt">Today I’m feeling</label>
-  <div class="input-line"><input id="emotionInput" maxlength="160" autocomplete="off" placeholder="…" aria-label="How you are feeling"><button id="continueButton" aria-label="Submit entry for AI reflection" hidden>↵</button></div>
+  <label for="emotionInput" class="sr-only">Today I’m feeling</label>
+  <div class="input-line"><input id="emotionInput" maxlength="160" autocomplete="off" placeholder="Today I’m feeling" aria-label="How you are feeling"><button id="continueButton" aria-label="Submit entry for AI reflection" hidden>↵</button></div>
   <p class="small submission-note">Enter or ↵ sends this entry to OpenAI for a reflection.</p>
   <section id="contextStep" hidden>
    <label for="context">What happened?</label>
