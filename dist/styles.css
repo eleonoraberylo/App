@@ -6,3 +6,5 @@
 .wake-sky{pointer-events:none}
 
 #reflectionPanel{position:relative;padding-top:28px;border-top-color:#ffffff30}#reflectionPanel .panel-heading{position:absolute;right:0;top:0}#aiOutput{padding-right:24px;animation:response-in 1.2s ease both}#aiAvailability:empty{display:none}body[data-scene=prompt] #main,body[data-scene=context] #main{animation:response-in 1.4s ease both}@keyframes response-in{from{opacity:0}to{opacity:1}}
+
+.prompt{font-family:'IBM Plex Mono',monospace;font-size:clamp(1rem,3.35vw,2.2rem);font-weight:400;letter-spacing:.12em;text-transform:uppercase;line-height:1.5}.input-line input{font-family:'IBM Plex Mono',monospace;font-size:clamp(1.2rem,3vw,2rem);letter-spacing:.06em}header .brand,.panel-heading h2,dialog h2,.empty-state h3{font-family:'IBM Plex Mono',monospace;letter-spacing:.04em}.vignette{background:radial-gradient(ellipse at center,transparent,#0006)}body[data-scene=prompt] #main,body[data-scene=context] #main{animation-duration:1.077s}
