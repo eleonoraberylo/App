@@ -12,3 +12,5 @@
 :root{--ink:#b1b5b3}.input-line input{color:#b1b5b3;font-size:clamp(1rem,2.7vw,1.65rem);letter-spacing:.035em}.input-line input::placeholder{color:#858b88;opacity:1}.input-line{border-bottom-color:#ffffff28}body[data-scene=gathering] #main{visibility:visible;animation:response-in 1.5s ease 13.5s both;pointer-events:none}body[data-scene=prompt] #main,body[data-scene=context] #main{animation:none;opacity:1}@media(prefers-reduced-motion:reduce){body[data-scene=gathering] #main{visibility:hidden;opacity:0}}
 
 .input-line input::placeholder{color:#555b58;opacity:1}body[data-scene=gathering] #main{animation:response-in 1.428571s linear 9.285714s both}
+
+.input-line{position:relative}.input-line input{padding-right:52px}.input-line #continueButton{position:absolute;right:0;bottom:8px;padding:0;width:44px;height:44px;font-size:1.65rem;color:#858b88}.input-line #continueButton:disabled{opacity:.35}body[data-scene=gathering] #main{animation:response-in 2s linear 6s both}

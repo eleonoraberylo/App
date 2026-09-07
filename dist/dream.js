@@ -30,7 +30,7 @@ function unlock(){
 }
 window.digitalPulse=color=>{tint=color;pulse=clock;};
 function draw(dt){
- const elapsed=(performance.now()-startedAt)*1.4,settle=IntroTiming.settle(elapsed),smooth=settle*settle*(3-2*settle);
+ const elapsed=(performance.now()-startedAt)*1.875,settle=IntroTiming.settle(elapsed),smooth=settle*settle*(3-2*settle);
  camera.x+=(mouse.x-camera.x)*Math.min(1,dt*.001);camera.y+=(mouse.y-camera.y)*Math.min(1,dt*.001);
  const kick=pulse<0?0:Math.max(0,1-(clock-pulse)/1800);
  ctx.clearRect(0,0,width,height);ctx.fillStyle='#040505';ctx.fillRect(0,0,width,height);
@@ -40,18 +40,19 @@ function draw(dt){
  const ca=Math.cos(angle),sa=Math.sin(angle);
  for(let j=0;j<points.length;j++){
   const p=points[j];
-  if(!paused){p.z-=dt*1.4*IntroTiming.speed*(scene==='context'?.000003:.000009+flight*.00016)*(1-smooth*.85);if(p.z<.18)p.z=3;}
+  if(!paused){p.z-=dt*1.875*IntroTiming.speed*(scene==='context'?.000003:.000009+flight*.00016)*(1-smooth*.85);if(p.z<.18)p.z=3;}
   const scale=1/(p.z+.22),rx=p.x*ca-p.y*sa,ry=p.x*sa+p.y*ca;
   const baseX=width/2+rx*width*.58*scale-(camera.x-.5)*38*scale,baseY=height/2+ry*height*.58*scale-(camera.y-.5)*24*scale;
   let x=baseX,y=baseY;
   const target=targets[j],forming=target&&!paused&&elapsed<15000;
   const progress=forming?Math.min(1,Math.max(0,(elapsed-5500-p.s*900)/6100)):0;
   const gather=progress*progress*(3-2*progress),arc=Math.sin(gather*Math.PI);
-  if(forming){x=baseX+(target.x-baseX)*gather+Math.sin(p.phase+elapsed*.0003)*width*.075*arc;y=baseY+(target.y-baseY)*gather+Math.cos(p.phase+elapsed*.0003)*height*.055*arc;}
+  if(forming){x=baseX+(target.x-baseX)*gather+Math.sin(p.phase+elapsed*.0003)*width*.04*arc;y=baseY+(target.y-baseY)*gather+Math.cos(p.phase+elapsed*.0003)*height*.03*arc;}
   const near=Math.max(0,1-Math.hypot(baseX-mouse.x*width,baseY-mouse.y*height)/170);
   let alpha=.24+Math.pow(p.s,2)*.58+near*.16;
   alpha*=1-smooth*.35;
-  if(forming)alpha=Math.min(.28,alpha)*(1-gather)*(1-Math.min(1,Math.max(0,(elapsed-13000)/2000)));
+  if(target&&!forming&&!paused)alpha*=Math.min(1,Math.max(0,(elapsed-15000)/2500));
+  if(forming)alpha=Math.min(.28,alpha)*(1-gather)*(1-Math.min(1,Math.max(0,(elapsed-11250)/3750)));
   if(forming&&progress>0&&progress<1&&Number.isFinite(p.px)){
    ctx.globalAlpha=alpha*.32;ctx.strokeStyle='#555b58';ctx.lineWidth=.6;ctx.beginPath();ctx.moveTo(p.px,p.py);ctx.lineTo(x,y);ctx.stroke();
   }
@@ -67,8 +68,8 @@ function draw(dt){
   if(forming){ctx.beginPath();ctx.arc(x,y,size*.5,0,Math.PI*2);ctx.fill();}else ctx.fillRect(x,y,size,size);
  }
  if(textLayer&&!paused&&elapsed<15000){
-  const reveal=Math.min(1,Math.max(0,(elapsed-6500)/6500));
-  const fade=1-Math.min(1,Math.max(0,(elapsed-13000)/2000));
+  const reveal=Math.min(1,Math.max(0,(elapsed-5000)/6250));
+  const fade=1-Math.min(1,Math.max(0,(elapsed-11250)/3750));
   ctx.globalAlpha=(reveal*reveal*(3-2*reveal))*fade;ctx.drawImage(textLayer,0,0);
  }
  if(kick>0){ctx.globalAlpha=kick*.11;ctx.fillStyle=tint;ctx.fillRect(width*(1-kick),0,.7,height);}
