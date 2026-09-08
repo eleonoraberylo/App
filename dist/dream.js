@@ -1,7 +1,7 @@
 'use strict';
 const canvas=$('sky'),ctx=canvas.getContext('2d'),media=matchMedia('(prefers-reduced-motion: reduce)');
 const startedAt=performance.now();
-let width=innerWidth,height=innerHeight,points=[],targets=[],textLayer=null,clock=0,last=0,frame=0,scene='gathering',pulse=-1,tint='#cbd3cc',paused=media.matches,palette=['#b9c4df','#d7bed0','#b8d4cb'],colored=false,currentColors=['#b9c4df','#d7bed0','#b8d4cb'];
+let width=innerWidth,height=innerHeight,points=[],targets=[],textLayer=null,clock=0,last=0,frame=0,scene='gathering',pulse=-1,tint='#cbd3cc',paused=media.matches,palette=['#b9c4df','#d7bed0','#b8d4cb'],colored=false,currentColors=Array.from({length:7},(_,i)=>['#b9c4df','#d7bed0','#b8d4cb'][i%3]),previousColors=[];
 const mouse={x:.5,y:.5},camera={x:.5,y:.5};
 window.introReady=false;
 function setup(){width=innerWidth;height=innerHeight;const d=Math.min(devicePixelRatio||1,2);canvas.width=width*d;canvas.height=height*d;ctx.setTransform(d,0,0,d,0,0);
@@ -28,7 +28,7 @@ function unlock(){
  window.introReady=true;scene='prompt';document.body.dataset.scene=scene;$('main').inert=false;$('wakeSky').hidden=true;$('introStatus').textContent='Ready. You can now type your entry.';
  draw(0);
 }
-window.digitalPulse=colors=>{palette=Array.isArray(colors)?colors:[colors];tint=palette[0];colored=true;pulse=clock;draw(0);};
+window.digitalPulse=colors=>{if(!colors||Array.isArray(colors)&&!colors.length)return;previousColors=[...currentColors];palette=Array.isArray(colors)?colors:[colors];tint=palette[0];colored=true;pulse=clock;draw(0);};
 const laneHeights=[.17,.27,.36,.57,.69,.79,.88];
 function laneY(i){return height*laneHeights[i]+Math.sin(clock*.00006+i*1.7)*height*.009-(camera.y-.5)*(6+i*2);}
 function blendColor(a,b,t){const channels=[1,3,5].map(i=>Math.round(parseInt(a.slice(i,i+2),16)*(1-t)+parseInt(b.slice(i,i+2),16)*t).toString(16).padStart(2,'0'));return '#'+channels.join('');}
@@ -41,16 +41,16 @@ function draw(dt){
  const elapsed=(performance.now()-startedAt)*1.875;
  camera.x+=(mouse.x-camera.x)*Math.min(1,dt*.001);camera.y+=(mouse.y-camera.y)*Math.min(1,dt*.001);
  const age=pulse<0?99999:clock-pulse,kick=paused?0:Math.sin(Math.PI*Math.min(1,age/6000));
- for(let i=0;i<3;i++)currentColors[i]=blendColor(currentColors[i],palette[i%palette.length],paused?1:Math.min(1,dt/900));
+ for(let i=0;i<7;i++)currentColors[i]=blendColor(previousColors[i]||currentColors[i],palette[i%palette.length],paused?1:Math.min(1,age/1400));
  ctx.globalAlpha=1;ctx.fillStyle='#040506';ctx.fillRect(0,0,width,height);
  const arrival=paused?1:Math.min(1,(performance.now()-startedAt)/1800);
  // Each star and its optical trail share a horizontal layer and velocity.
  for(let i=0;i<7;i++){
-  const y=laneY(i),color=currentColors[i%3],sweep=Math.sin(clock*.00007+i*2);
-  const x=width*(.5+sweep*.23)-(camera.x-.5)*18;
+  const y=laneY(i),color=currentColors[i],sweep=Math.sin(clock*.00007+i*2);
+  const x=width*(.5+sweep*.23+kick*Math.sin(age*.0018+i*.45)*.3)-(camera.x-.5)*18;
   const dim=i===2||i===3?.52:1;
-  lightBand(x,y,width*(.65+i%3*.12),height*(.013+i%2*.007),color,arrival*dim*(.28+kick*.16));
-  lightBand(x,y,width*.6,1.2+i%2,color,arrival*dim*(.32+kick*.24));
+  lightBand(x,y,width*(.65+i%3*.12),height*(.013+i%2*.007),color,arrival*dim*(.28+kick*.35));
+  lightBand(x,y,width*.6,1.2+i%2,color,arrival*dim*(.32+kick*.4));
   lightBand(x-width*.14,y,width*.19,.42,color,arrival*dim*.35);
  }
  for(let j=0;j<points.length;j++){
@@ -64,7 +64,7 @@ function draw(dt){
   const progress=forming?Math.min(1,Math.max(0,(elapsed-4000-p.s*600)/6500)):0;
   const gather=progress*progress*(3-2*progress);
   if(forming){x=x0+(target.x-x0)*gather;y=y0+(target.y-y0)*gather;}
-  const color=currentColors[layer%3];
+  const color=currentColors[layer];
   let alpha=(inBand?.12:.05)+Math.pow(p.s,4)*.42;
   if(forming)alpha=Math.min(.22,alpha)*(1-gather);
   else if(target&&!paused)alpha*=Math.min(1,Math.max(0,(elapsed-15000)/2200));

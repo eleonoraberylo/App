@@ -72,9 +72,21 @@ function notify(text){$('status').textContent=text;$('status').hidden=false;clea
 try{const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');if(Array.isArray(saved)){memories=saved.filter(m=>m&&typeof m.id==='string'&&typeof m.emotion==='string'&&m.emotion.length<=160&&typeof m.context==='string'&&Number.isFinite(Date.parse(m.at))).slice(0,500);deviceStorage=true;}}catch{notify('Device storage is unavailable. Entries will stay in this session.');}
 function storageLabel(){$('storageLabel').textContent=deviceStorage?'Saved on this device':'Session only';$('rememberDevice').checked=deviceStorage;$('count').textContent=memories.length;}
 function persist(next){if(deviceStorage){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(next));}catch{notify('Could not save on this device. Your changes have not been applied.');return false;}}memories=next;storageLabel();return true;}
-function colorsFor(name){const palette={peaceful:'#b4d6c6',peace:'#b4d6c6',calm:'#b4d6c6',relaxed:'#b4d6c6',stressed:'#ded2a9',stress:'#ded2a9',anxious:'#ded2a9',worried:'#ded2a9',furious:'#d6afb8',angry:'#d6afb8',anger:'#d6afb8',annoyed:'#dfbfa9',frustrated:'#dfbfa9',sad:'#b2c9df',lonely:'#b2c9df',hopeful:'#c6badf',happy:'#c6badf',joyful:'#c6badf',affectionate:'#d9b9cd',loved:'#d9b9cd',grateful:'#d9b9cd'};const words=name.toLowerCase().match(/[a-z']+/g)||[];const colors=words.flatMap((word,i)=>palette[word]&&!words.slice(Math.max(0,i-2),i).some(w=>['not','never',"don't",'less'].includes(w))?[palette[word]]:[]);return [...new Set(colors)].slice(0,3).length?[...new Set(colors)].slice(0,3):['#92a9ca','#b6a1c7'];}
-function colorFor(name){return colorsFor(name)[0];}
-function continueEntry(){if(busy||!window.introReady||!input.value.trim())return;selected={name:input.value.trim(),color:colorFor(input.value)};document.documentElement.style.setProperty('--accent',selected.color);$('contextStep').hidden=false;$('stepLabel').textContent='02 / CONTEXT';window.setDigitalScene?.('context');window.digitalPulse?.(colorsFor(input.value));$('reflectionPanel').hidden=false;showReflection();}
+const feelingCatalog=[{"name":"peaceful","color":"#b4d6c6","words":["peaceful","peace","at peace"]},{"name":"calm","color":"#a9cfc8","words":["calm","calmness"]},{"name":"relaxed","color":"#c1d7bb","words":["relaxed","relaxation"]},{"name":"content","color":"#cfd8b4","words":["content","contentment","contented"]},{"name":"relieved","color":"#b5dacc","words":["relieved","relief"]},{"name":"grateful","color":"#d9cba8","words":["grateful","gratitude","thankful"]},{"name":"happy","color":"#e0d0a8","words":["happy","happiness"]},{"name":"joyful","color":"#e6c39d","words":["joyful","joy","joyous"]},{"name":"excited","color":"#e6b99e","words":["excited","excitement"]},{"name":"hopeful","color":"#c6badf","words":["hopeful","hope"]},{"name":"proud","color":"#cbb2d6","words":["proud","pride"]},{"name":"confident","color":"#b2c5d8","words":["confident","confidence"]},{"name":"loved","color":"#d9b9cd","words":["loved","love","loving"]},{"name":"affectionate","color":"#e0bdc8","words":["affectionate","affection"]},{"name":"connected","color":"#c2ccbd","words":["connected","connection"]},{"name":"amused","color":"#e0c4b4","words":["amused","amusement"]},{"name":"curious","color":"#bad1dc","words":["curious","curiosity","interested"]},{"name":"inspired","color":"#c4bee2","words":["inspired","inspiration"]},{"name":"awed","color":"#b8b6d8","words":["awed","awe","in awe"]},{"name":"nostalgic","color":"#c6b5c3","words":["nostalgic","nostalgia"]},{"name":"sad","color":"#b2c9df","words":["sad","sadness","unhappy"]},{"name":"lonely","color":"#abbcd2","words":["lonely","loneliness","isolated"]},{"name":"disappointed","color":"#b6b4ca","words":["disappointed","disappointment"]},{"name":"grieving","color":"#a6b0c6","words":["grieving","grief","heartbroken"]},{"name":"hurt","color":"#c3aebf","words":["hurt","wounded"]},{"name":"guilty","color":"#c4baa8","words":["guilty","guilt"]},{"name":"ashamed","color":"#bcaab4","words":["ashamed","shame"]},{"name":"embarrassed","color":"#d6b5bd","words":["embarrassed","embarrassment"]},{"name":"anxious","color":"#d9d0b8","words":["anxious","anxiety","uneasy"]},{"name":"worried","color":"#d3c79f","words":["worried","worry"]},{"name":"stressed","color":"#ded2a9","words":["stressed","stress","under stress"]},{"name":"overwhelmed","color":"#cbbcc6","words":["overwhelmed","overwhelm"]},{"name":"afraid","color":"#bcb9d0","words":["afraid","fear","scared","fearful"]},{"name":"insecure","color":"#b7bfd0","words":["insecure","insecurity"]},{"name":"angry","color":"#d7b0ae","words":["angry","anger","mad"]},{"name":"furious","color":"#d5a2ab","words":["furious","fury","enraged"]},{"name":"annoyed","color":"#dfbfa9","words":["annoyed","annoyance","irritated"]},{"name":"frustrated","color":"#d9b49d","words":["frustrated","frustration"]},{"name":"jealous","color":"#c0c4a7","words":["jealous","jealousy","envious","envy"]},{"name":"disgusted","color":"#b8c1aa","words":["disgusted","disgust"]}];
+function recognizeFeelings(text){
+ const clauses=text.toLowerCase().replace(/[’]/g,"'").split(/[,;.!?]|\b(?:but|however)\b/);
+ const found=[];
+ for(const clause of clauses){const words=clause.match(/[a-z']+/g)||[];let negated=false;
+  for(let i=0;i<words.length;i++){
+   if(['not','never','neither',"don't","isn't","aren't","wasn't","weren't",'without'].includes(words[i])){if(words[i+1]!=='only')negated=true;continue;}
+   for(const item of feelingCatalog)for(const alias of item.words){const tokens=alias.split(' ');if(tokens.every((w,k)=>words[i+k]===w)&&!negated&&!found.some(x=>x.name===item.name)){found.push(item);break;}}
+  }
+ }return found.slice(0,7);
+}
+function colorsFor(text){return recognizeFeelings(text).map(x=>x.color);}
+function colorFor(text){return colorsFor(text)[0]||'#b9c4df';}
+function animateFeeling(){const matches=recognizeFeelings(input.value);if(matches.length){window.digitalPulse?.(matches.map(x=>x.color));$('aiAvailability').textContent=matches.map(x=>x.name).join(' · ');}else $('aiAvailability').textContent='No color match yet. Your words can still be saved.';}
+function continueEntry(){if(busy||!window.introReady||!input.value.trim())return;selected={name:input.value.trim(),color:colorFor(input.value)};document.documentElement.style.setProperty('--accent',selected.color);$('contextStep').hidden=false;$('stepLabel').textContent='02 / CONTEXT';window.setDigitalScene?.('context');$('reflectionPanel').hidden=false;showReflection();animateFeeling();}
 $('continueButton').onclick=continueEntry;input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){e.preventDefault();continueEntry();}});
 input.addEventListener('input',()=>{$('continueButton').disabled=!input.value.trim();if(selected)selected={name:input.value.trim(),color:colorFor(input.value)};clearReflection();});
 function clearReflection(){reflection='';$('aiOutput').textContent='';$('feedbackActions').hidden=true;$('correctionBlock').hidden=true;$('correction').value='';}
@@ -98,8 +110,8 @@ $('confirmDelete').onclick=()=>{if(persist(memories.filter(m=>m.id!==pendingDele
 $('rememberDevice').onchange=e=>{try{if(e.target.checked)localStorage.setItem(STORAGE_KEY,JSON.stringify(memories));else localStorage.removeItem(STORAGE_KEY);deviceStorage=e.target.checked;storageLabel();}catch{e.target.checked=deviceStorage;notify('Could not change device storage.');}};
 $('closeReflection').onclick=()=>{$('reflectionPanel').hidden=true;};
 const prompts=['What feels most important about this moment?','What would you like to remember about how you feel right now?','What would feel supportive to you right now?','Is there anything else you are feeling alongside this?'];
-function showReflection(alternate=false){if(!window.introReady||!input.value.trim())return;if(alternate)promptIndex=(promptIndex+1)%prompts.length;reflection=prompts[promptIndex];$('reflectionPanel').hidden=false;$('aiAvailability').textContent='';$('aiOutput').textContent=reflection;$('feedbackActions').hidden=false;$('correctionBlock').hidden=true;}
-$('contextSubmit').onclick=()=>{showReflection();window.digitalPulse?.(colorsFor(input.value));};
+function showReflection(alternate=false){if(!window.introReady||!input.value.trim())return;if(alternate)promptIndex=(promptIndex+1)%prompts.length;reflection=prompts[promptIndex];$('reflectionPanel').hidden=false;$('aiOutput').textContent=reflection;$('feedbackActions').hidden=false;$('correctionBlock').hidden=true;}
+$('contextSubmit').onclick=()=>{showReflection();animateFeeling();};
 $('context').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();$('contextSubmit').click();}});
 $('fits').onclick=()=>{$('feedbackActions').hidden=true;};
 $('notQuite').onclick=()=>showReflection(true);
@@ -108,7 +120,7 @@ storageLabel();
 <script>'use strict';
 const canvas=$('sky'),ctx=canvas.getContext('2d'),media=matchMedia('(prefers-reduced-motion: reduce)');
 const startedAt=performance.now();
-let width=innerWidth,height=innerHeight,points=[],targets=[],textLayer=null,clock=0,last=0,frame=0,scene='gathering',pulse=-1,tint='#cbd3cc',paused=media.matches,palette=['#b9c4df','#d7bed0','#b8d4cb'],colored=false,currentColors=['#b9c4df','#d7bed0','#b8d4cb'];
+let width=innerWidth,height=innerHeight,points=[],targets=[],textLayer=null,clock=0,last=0,frame=0,scene='gathering',pulse=-1,tint='#cbd3cc',paused=media.matches,palette=['#b9c4df','#d7bed0','#b8d4cb'],colored=false,currentColors=Array.from({length:7},(_,i)=>['#b9c4df','#d7bed0','#b8d4cb'][i%3]),previousColors=[];
 const mouse={x:.5,y:.5},camera={x:.5,y:.5};
 window.introReady=false;
 function setup(){width=innerWidth;height=innerHeight;const d=Math.min(devicePixelRatio||1,2);canvas.width=width*d;canvas.height=height*d;ctx.setTransform(d,0,0,d,0,0);
@@ -135,7 +147,7 @@ function unlock(){
  window.introReady=true;scene='prompt';document.body.dataset.scene=scene;$('main').inert=false;$('wakeSky').hidden=true;$('introStatus').textContent='Ready. You can now type your entry.';
  draw(0);
 }
-window.digitalPulse=colors=>{palette=Array.isArray(colors)?colors:[colors];tint=palette[0];colored=true;pulse=clock;draw(0);};
+window.digitalPulse=colors=>{if(!colors||Array.isArray(colors)&&!colors.length)return;previousColors=[...currentColors];palette=Array.isArray(colors)?colors:[colors];tint=palette[0];colored=true;pulse=clock;draw(0);};
 const laneHeights=[.17,.27,.36,.57,.69,.79,.88];
 function laneY(i){return height*laneHeights[i]+Math.sin(clock*.00006+i*1.7)*height*.009-(camera.y-.5)*(6+i*2);}
 function blendColor(a,b,t){const channels=[1,3,5].map(i=>Math.round(parseInt(a.slice(i,i+2),16)*(1-t)+parseInt(b.slice(i,i+2),16)*t).toString(16).padStart(2,'0'));return '#'+channels.join('');}
@@ -148,16 +160,16 @@ function draw(dt){
  const elapsed=(performance.now()-startedAt)*1.875;
  camera.x+=(mouse.x-camera.x)*Math.min(1,dt*.001);camera.y+=(mouse.y-camera.y)*Math.min(1,dt*.001);
  const age=pulse<0?99999:clock-pulse,kick=paused?0:Math.sin(Math.PI*Math.min(1,age/6000));
- for(let i=0;i<3;i++)currentColors[i]=blendColor(currentColors[i],palette[i%palette.length],paused?1:Math.min(1,dt/900));
+ for(let i=0;i<7;i++)currentColors[i]=blendColor(previousColors[i]||currentColors[i],palette[i%palette.length],paused?1:Math.min(1,age/1400));
  ctx.globalAlpha=1;ctx.fillStyle='#040506';ctx.fillRect(0,0,width,height);
  const arrival=paused?1:Math.min(1,(performance.now()-startedAt)/1800);
  // Each star and its optical trail share a horizontal layer and velocity.
  for(let i=0;i<7;i++){
-  const y=laneY(i),color=currentColors[i%3],sweep=Math.sin(clock*.00007+i*2);
-  const x=width*(.5+sweep*.23)-(camera.x-.5)*18;
+  const y=laneY(i),color=currentColors[i],sweep=Math.sin(clock*.00007+i*2);
+  const x=width*(.5+sweep*.23+kick*Math.sin(age*.0018+i*.45)*.3)-(camera.x-.5)*18;
   const dim=i===2||i===3?.52:1;
-  lightBand(x,y,width*(.65+i%3*.12),height*(.013+i%2*.007),color,arrival*dim*(.28+kick*.16));
-  lightBand(x,y,width*.6,1.2+i%2,color,arrival*dim*(.32+kick*.24));
+  lightBand(x,y,width*(.65+i%3*.12),height*(.013+i%2*.007),color,arrival*dim*(.28+kick*.35));
+  lightBand(x,y,width*.6,1.2+i%2,color,arrival*dim*(.32+kick*.4));
   lightBand(x-width*.14,y,width*.19,.42,color,arrival*dim*.35);
  }
  for(let j=0;j<points.length;j++){
@@ -171,7 +183,7 @@ function draw(dt){
   const progress=forming?Math.min(1,Math.max(0,(elapsed-4000-p.s*600)/6500)):0;
   const gather=progress*progress*(3-2*progress);
   if(forming){x=x0+(target.x-x0)*gather;y=y0+(target.y-y0)*gather;}
-  const color=currentColors[layer%3];
+  const color=currentColors[layer];
   let alpha=(inBand?.12:.05)+Math.pow(p.s,4)*.42;
   if(forming)alpha=Math.min(.22,alpha)*(1-gather);
   else if(target&&!paused)alpha*=Math.min(1,Math.max(0,(elapsed-15000)/2200));
