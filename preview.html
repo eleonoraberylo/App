@@ -155,13 +155,18 @@ function laneY(i,x=width*.5){
  const drift=Math.sin(u*(4+i%3)+t*(.16+(i%4)*.07)+phase)*height*(.007+(i%3)*.003);
  const swell=Math.sin(u*9-t*.29+phase*.7)*Math.sin(t*.11+phase)*height*.008;
  const buzz=buzzFor(i)*(Math.sin(x*.11+t*39+phase)+Math.sin(x*.047-t*27))*1.6;
- let shock=0;const age=clock-pulse;
- if(!paused&&i===activeLane&&pulse>=0&&age<1600){
-  const center=((age/650)%1)*1.5-.25,z=(u-center)*45;
-  const shape=-.28*Math.exp(-Math.pow(z+1.4,2)*4)+Math.exp(-z*z*6)-.62*Math.exp(-Math.pow(z-.8,2)*7);
-  shock=shape*Math.min(height*.1,75)*Math.pow(1-age/1600,.6);
+ let shock=0,envelope=0;const age=clock-pulse;
+ if(!paused&&i===activeLane&&pulse>=0&&age<4800){
+  const spacing=Math.max(170,Math.min(320,width*.32));
+  const cycle=((x+age*.15)/spacing)%1;
+  const bump=(center,spread)=>Math.exp(-Math.pow((cycle-center)/spread,2));
+  // Screen y grows downward: R rises, S drops, then the rounded T rises.
+  const shape=-.09*bump(.14,.045)+.075*bump(.255,.028)-1.0*bump(.30,.017)+.92*bump(.343,.022)-.32*bump(.61,.087);
+  envelope=Math.min(1,age/140)*Math.min(1,(4800-age)/1000);
+  const amplitude=Math.min(85,height*.12,height*Math.min(laneHeights[i],1-laneHeights[i])*.78);
+  shock=shape*amplitude*envelope;
  }
- return height*laneHeights[i]+drift+swell+buzz+shock-(camera.y-.5)*(5+i);
+ return height*laneHeights[i]+ (drift+swell+buzz)*(1-envelope*.88)+shock-(camera.y-.5)*(5+i);
 }
 function blendColor(a,b,t){const channels=[1,3,5].map(i=>Math.round(parseInt(a.slice(i,i+2),16)*(1-t)+parseInt(b.slice(i,i+2),16)*t).toString(16).padStart(2,'0'));return '#'+channels.join('');}
 function lightBand(x,y,w,h,color,strength){
@@ -173,7 +178,7 @@ function draw(dt){
  const elapsed=(performance.now()-startedAt)*1.875;
  camera.x+=(mouse.x-camera.x)*Math.min(1,dt*.001);camera.y+=(mouse.y-camera.y)*Math.min(1,dt*.001);
  const age=pulse<0?99999:clock-pulse,kick=paused?0:Math.sin(Math.PI*Math.min(1,age/6000));
- for(let i=0;i<14;i++)currentColors[i]=blendColor(previousColors[i]||currentColors[i],palette[i%palette.length],paused?1:Math.min(1,age/1400));
+ for(let i=0;i<14;i++)currentColors[i]=blendColor(previousColors[i]||currentColors[i],palette[i%palette.length],paused?1:Math.min(1,age/250));
  ctx.globalAlpha=1;ctx.fillStyle='#040506';ctx.fillRect(0,0,width,height);
  const arrival=paused?1:Math.min(1,(performance.now()-startedAt)/1800);
  // Each star and its optical trail share a horizontal layer and velocity.
@@ -181,7 +186,7 @@ function draw(dt){
   const y=laneY(i),color=currentColors[i],sweep=Math.sin(clock*.00007+i*2),localKick=i===activeLane?kick:0,buzz=buzzFor(i);
   const x=width*(.5+sweep*.23+kick*Math.sin(age*.0018+i*.45)*.3)-(camera.x-.5)*18;
   const dim=laneHeights[i]>.38&&laneHeights[i]<.62?.26:.65;
-  ctx.beginPath();for(let px=-30;px<=width+30;px+=5){const py=laneY(i,px);if(px===-30)ctx.moveTo(px,py);else ctx.lineTo(px,py);}
+  ctx.beginPath();for(let px=-30;px<=width+30;px+=(i===activeLane?2:5)){const py=laneY(i,px);if(px===-30)ctx.moveTo(px,py);else ctx.lineTo(px,py);}
   const ribbon=ctx.createLinearGradient(0,0,width,0);ribbon.addColorStop(0,color+'00');ribbon.addColorStop(.25,color+'90');ribbon.addColorStop(.65,color+'b0');ribbon.addColorStop(1,color+'00');ctx.strokeStyle=ribbon;
   ctx.globalAlpha=arrival*dim*(.04+localKick*.08+buzz*.015);ctx.lineWidth=16;ctx.stroke();
   ctx.globalAlpha=arrival*dim*(.1+localKick*.15);ctx.lineWidth=4;ctx.stroke();
