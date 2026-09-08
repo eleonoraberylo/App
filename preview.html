@@ -20,6 +20,8 @@
 .input-line input::placeholder{color:#555b58;opacity:1}body[data-scene=gathering] #main{animation:response-in 1.428571s linear 9.285714s both}
 
 .input-line{position:relative}.input-line input{padding-right:52px}.input-line #continueButton{position:absolute;right:0;bottom:8px;padding:0;width:44px;height:44px;font-size:1.65rem;color:#858b88}.input-line #continueButton:disabled{opacity:.35}body[data-scene=gathering] #main{animation:response-in 2s linear 6s both}
+
+#flowSurface{transition:opacity .32s ease;opacity:1}#flowSurface.fading{opacity:0}.flow-words{font-family:'IBM Plex Mono',monospace;font-size:clamp(1rem,2.7vw,1.65rem);letter-spacing:.035em;line-height:1.65;color:#858b88;text-align:left;padding:5px 0 16px;width:100%;font-weight:400}#launchPrompt{color:#555b58}#flowSurface #contextStep{margin:0;animation:none}.context-line{position:relative}.context-line textarea{padding-right:52px;font-size:clamp(1rem,2.4vw,1.4rem);line-height:1.8}.context-line button{position:absolute;right:0;bottom:12px;font-size:1.65rem;color:#858b88}#recommendation{font-size:clamp(1rem,2.2vw,1.3rem);line-height:1.85;color:#afb4b1;margin:0}body[data-scene=gathering] footer{visibility:hidden}#reduceMotion{accent-color:#a9cfc8}
 </style>
 
 </head>
@@ -31,28 +33,17 @@
   <nav aria-label="Main navigation"><button id="memoriesButton"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v17l-7-4-7 4z"/></svg>Memories <span id="count">0</span></button><button id="accountButton" class="account">Account <span aria-hidden="true">↗</span></button></nav>
 </header>
 <button id="wakeSky" class="wake-sky" tabindex="-1" aria-label="Wake the stars and name a feeling"><span>Enter your sky</span></button>
-<p id="introStatus" class="sr-only" role="status">The opening lasts 8 seconds. Typing becomes available afterwards.</p>
+<p id="introStatus" class="sr-only" role="status">The opening lasts 8 seconds. Select Today I’m feeling afterwards to begin.</p>
 <main id="main" inert>
- <section class="entry" aria-label="Name your feeling">
-  <p class="eyebrow" id="stepLabel">01 / CHECK IN</p>
-  <label for="emotionInput" class="sr-only">Today I’m feeling</label>
-  <div class="input-line"><input id="emotionInput" maxlength="160" autocomplete="off" placeholder="Today I’m feeling" aria-label="How you are feeling"><button id="continueButton" aria-label="Submit entry" disabled>↵</button></div>
-  <section id="contextStep" hidden>
-   <label for="context">What happened?</label>
-   <textarea id="context" rows="3" maxlength="4000" placeholder="Write what’s on your mind."></textarea>
-   <div class="actions"><button id="contextSubmit" class="primary" aria-label="Save context">↵</button><button id="saveMemory">Save moment</button></div>
-  </section>
-  <section id="reflectionPanel" aria-labelledby="reflectionTitle" hidden>
-   <div class="panel-heading"><h2 id="reflectionTitle" class="sr-only">Reflection prompt</h2><button id="closeReflection" aria-label="Close response">×</button></div>
-   <p id="aiAvailability" role="status"></p>
-
-   <div id="aiOutput" role="status" aria-live="polite"></div>
-   <div id="feedbackActions" hidden><div class="actions"><button id="fits">Keep this prompt</button><button id="notQuite">Another prompt</button></div></div>
-   <div id="correctionBlock" hidden><label for="correction">What did it miss?</label><textarea id="correction" maxlength="1000" rows="2"></textarea><button id="reviseAI" class="primary">Reconsider ↗</button></div>
-  </section>
+ <section class="entry" id="flowSurface" aria-label="Your moment">
+  <button id="launchPrompt" class="flow-words">Today I’m feeling</button>
+  <div id="feelingStep" hidden><label for="emotionInput" class="sr-only">How are you feeling?</label><div class="input-line"><input id="emotionInput" maxlength="160" autocomplete="off" placeholder="Today I’m feeling"><button id="continueButton" aria-label="Submit feeling" disabled>↵</button></div></div>
+  <div id="questionStep" hidden><button id="questionPrompt" class="flow-words"></button></div>
+  <div id="contextStep" hidden><label id="contextLabel" for="context" class="sr-only">What happened?</label><div class="context-line"><textarea id="context" rows="3" maxlength="4000" placeholder="What happened?"></textarea><button id="contextSubmit" aria-label="Submit your answer" disabled>↵</button></div></div>
+  <div id="resultStep" hidden><p id="recommendation" tabindex="-1"></p><div class="actions"><button id="saveMemory">Save moment</button><button id="editAnswer">Add more</button><button id="newMoment">New moment</button></div></div>
  </section>
 </main>
-<footer><button id="aboutButton">About this space</button><span id="storageLabel">Session only</span><button id="motionButton" aria-pressed="false">Pause motion <span aria-hidden="true">Ⅱ</span></button></footer>
+<footer><button id="aboutButton">About this space</button></footer>
 <div id="status" role="status" aria-live="polite" class="toast" hidden></div>
 <dialog id="memoriesDialog" class="memory-dialog" aria-labelledby="memoriesTitle">
  <div class="dialog-top"><div><p class="eyebrow">YOUR COLLECTION</p><h2 id="memoriesTitle">A sky of moments.</h2></div><button class="close" data-close aria-label="Close memories">×</button></div>
@@ -60,17 +51,17 @@
  <div id="memoryList"></div>
 </dialog>
 <dialog id="accountDialog" aria-labelledby="accountTitle"><button class="close" data-close aria-label="Close account">×</button><p class="eyebrow">ACCOUNT PREVIEW</p><h2 id="accountTitle">Your own space.</h2><p>Account creation and sign-in are planned for the next version. This interface study does not collect email addresses or passwords.</p><p>For now, you can keep memories for this session, or choose to save them on this device. They won’t sync between devices.</p><button class="primary" data-close>Continue without an account</button></dialog>
-<dialog id="aboutDialog" aria-labelledby="aboutTitle"><button class="close" data-close aria-label="Close about">×</button><p class="eyebrow">ABOUT AFTERGLOW</p><h2 id="aboutTitle">A place to name it.</h2><p>Choose a feeling, add the context you want to remember, and come back to it later. Your choices shape the colors on the screen.</p><p>Use your own words. The palette is expressive, not a scientific scale. No feeling is scored as good or bad.</p><p>This prototype is a reflective journal, not a diagnostic tool or a mental health treatment. Reflection questions are prewritten journal prompts. Entries are processed in this browser and are not sent to an AI service. Entries are not monitored.</p><p class="research">Research background: <a href="https://pubmed.ncbi.nlm.nih.gov/17576282/" target="_blank" rel="noopener noreferrer">Putting feelings into words (2007)</a>.</p><button class="primary" data-close>Back to my sky</button></dialog>
+<dialog id="aboutDialog" aria-labelledby="aboutTitle"><button class="close" data-close aria-label="Close about">×</button><p class="eyebrow">ABOUT AFTERGLOW</p><h2 id="aboutTitle">A place to name it.</h2><p>Choose a feeling, add the context you want to remember, and come back to it later. Your choices shape the colors on the screen.</p><p>Use your own words. The palette is expressive, not a scientific scale. No feeling is scored as good or bad.</p><p>This prototype is a reflective journal, not a diagnostic tool or a mental health treatment. Reflection questions are prewritten journal prompts. Entries are processed in this browser and are not sent to an AI service. Entries are not monitored.</p><p class="research">Research background: <a href="https://pubmed.ncbi.nlm.nih.gov/17576282/" target="_blank" rel="noopener noreferrer">Putting feelings into words (2007)</a>.</p><p>Suggested activities are prewritten and selected by the feeling words you enter. Your context is saved with your moment; it is not interpreted by AI.</p><p><a href="https://www.who.int/publications/i/item/9789240003927" target="_blank" rel="noopener noreferrer">Activity background: WHO stress-management guide</a></p><label><input type="checkbox" id="reduceMotion"> Reduce animation</label><button class="primary" data-close>Back to my sky</button></dialog>
 <dialog id="deleteDialog" aria-labelledby="deleteTitle"><h2 id="deleteTitle">Delete this moment?</h2><p>This removes it from your collection and any device copy. This cannot be undone.</p><div class="dialog-actions"><button data-close>Keep it</button><button id="confirmDelete" class="danger">Delete moment</button></div></dialog>
 <script>globalThis.IntroTiming=Object.freeze({speed:2,durationMs:8000,canType:elapsed=>elapsed>=8000,settle:elapsed=>Math.min(1,Math.max(0,(elapsed-9500)/4000))});
 </script>
 <script>'use strict';
 const $=id=>document.getElementById(id),input=$('emotionInput');
 const STORAGE_KEY='afterglow.memories.v1';
-let promptIndex=0;let selected=null,memories=[],deviceStorage=false,pendingDelete=null,toastTimer,reflection='',busy=false;
+let stage='launchPrompt',transitionTimer;let selected=null,memories=[],deviceStorage=false,pendingDelete=null,toastTimer,reflection='',busy=false;
 function notify(text){$('status').textContent=text;$('status').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('status').hidden=true,4500);}
 try{const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');if(Array.isArray(saved)){memories=saved.filter(m=>m&&typeof m.id==='string'&&typeof m.emotion==='string'&&m.emotion.length<=160&&typeof m.context==='string'&&Number.isFinite(Date.parse(m.at))).slice(0,500);deviceStorage=true;}}catch{notify('Device storage is unavailable. Entries will stay in this session.');}
-function storageLabel(){$('storageLabel').textContent=deviceStorage?'Saved on this device':'Session only';$('rememberDevice').checked=deviceStorage;$('count').textContent=memories.length;}
+function storageLabel(){$('rememberDevice').checked=deviceStorage;$('count').textContent=memories.length;}
 function persist(next){if(deviceStorage){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(next));}catch{notify('Could not save on this device. Your changes have not been applied.');return false;}}memories=next;storageLabel();return true;}
 const feelingCatalog=[{"name":"peaceful","color":"#b4d6c6","words":["peaceful","peace","at peace"]},{"name":"calm","color":"#a9cfc8","words":["calm","calmness"]},{"name":"relaxed","color":"#c1d7bb","words":["relaxed","relaxation"]},{"name":"content","color":"#cfd8b4","words":["content","contentment","contented"]},{"name":"relieved","color":"#b5dacc","words":["relieved","relief"]},{"name":"grateful","color":"#d9cba8","words":["grateful","gratitude","thankful"]},{"name":"happy","color":"#e0d0a8","words":["happy","happiness"]},{"name":"joyful","color":"#e6c39d","words":["joyful","joy","joyous"]},{"name":"excited","color":"#e6b99e","words":["excited","excitement"]},{"name":"hopeful","color":"#c6badf","words":["hopeful","hope"]},{"name":"proud","color":"#cbb2d6","words":["proud","pride"]},{"name":"confident","color":"#b2c5d8","words":["confident","confidence"]},{"name":"loved","color":"#d9b9cd","words":["loved","love","loving"]},{"name":"affectionate","color":"#e0bdc8","words":["affectionate","affection"]},{"name":"connected","color":"#c2ccbd","words":["connected","connection"]},{"name":"amused","color":"#e0c4b4","words":["amused","amusement"]},{"name":"curious","color":"#bad1dc","words":["curious","curiosity","interested"]},{"name":"inspired","color":"#c4bee2","words":["inspired","inspiration"]},{"name":"awed","color":"#b8b6d8","words":["awed","awe","in awe"]},{"name":"nostalgic","color":"#c6b5c3","words":["nostalgic","nostalgia"]},{"name":"sad","color":"#b2c9df","words":["sad","sadness","unhappy"]},{"name":"lonely","color":"#abbcd2","words":["lonely","loneliness","isolated"]},{"name":"disappointed","color":"#b6b4ca","words":["disappointed","disappointment"]},{"name":"grieving","color":"#a6b0c6","words":["grieving","grief","heartbroken"]},{"name":"hurt","color":"#c3aebf","words":["hurt","wounded"]},{"name":"guilty","color":"#c4baa8","words":["guilty","guilt"]},{"name":"ashamed","color":"#bcaab4","words":["ashamed","shame"]},{"name":"embarrassed","color":"#d6b5bd","words":["embarrassed","embarrassment"]},{"name":"anxious","color":"#d9d0b8","words":["anxious","anxiety","uneasy"]},{"name":"worried","color":"#d3c79f","words":["worried","worry"]},{"name":"stressed","color":"#ded2a9","words":["stressed","stress","under stress"]},{"name":"overwhelmed","color":"#cbbcc6","words":["overwhelmed","overwhelm"]},{"name":"afraid","color":"#bcb9d0","words":["afraid","fear","scared","fearful"]},{"name":"insecure","color":"#b7bfd0","words":["insecure","insecurity"]},{"name":"angry","color":"#d7b0ae","words":["angry","anger","mad"]},{"name":"furious","color":"#d5a2ab","words":["furious","fury","enraged"]},{"name":"annoyed","color":"#dfbfa9","words":["annoyed","annoyance","irritated"]},{"name":"frustrated","color":"#d9b49d","words":["frustrated","frustration"]},{"name":"jealous","color":"#c0c4a7","words":["jealous","jealousy","envious","envy"]},{"name":"disgusted","color":"#b8c1aa","words":["disgusted","disgust"]}];
 function recognizeFeelings(text){
@@ -85,36 +76,43 @@ function recognizeFeelings(text){
 }
 function colorsFor(text){return recognizeFeelings(text).map(x=>x.color);}
 function colorFor(text){return colorsFor(text)[0]||'#b9c4df';}
-function animateFeeling(){const matches=recognizeFeelings(input.value);if(matches.length){window.digitalPulse?.(matches.map(x=>x.color));$('aiAvailability').textContent=matches.map(x=>x.name).join(' · ');}else $('aiAvailability').textContent='No color match yet. Your words can still be saved.';}
-function continueEntry(){if(busy||!window.introReady||!input.value.trim())return;selected={name:input.value.trim(),color:colorFor(input.value)};document.documentElement.style.setProperty('--accent',selected.color);$('contextStep').hidden=false;$('stepLabel').textContent='02 / CONTEXT';window.setDigitalScene?.('context');$('reflectionPanel').hidden=false;showReflection();animateFeeling();}
+function animateFeeling(){const colors=colorsFor(input.value);window.digitalPulse?.(colors.length?colors:['#b9c4df','#d7bed0']);}
+function switchStage(id,focusId){if(busy)return;busy=true;const surface=$('flowSurface');surface.classList.add('fading');surface.inert=true;const delay=matchMedia('(prefers-reduced-motion: reduce)').matches?0:320;clearTimeout(transitionTimer);transitionTimer=setTimeout(()=>{for(const key of ['launchPrompt','feelingStep','questionStep','contextStep','resultStep'])$(key).hidden=key!==id;stage=id;surface.classList.remove('fading');surface.inert=false;busy=false;if(focusId)$(focusId).focus();},delay);}
+function questionFor(){const names=recognizeFeelings(input.value).map(x=>x.name);if(names.some(x=>['happy','joyful','peaceful','grateful','content','relieved'].includes(x)))return 'What helped you feel this way?';if(names.some(x=>['angry','furious','annoyed','frustrated','hurt'].includes(x)))return 'What happened before this feeling showed up?';return 'What feels most important about this moment?';}
+$('launchPrompt').onclick=()=>{if(window.introReady)switchStage('feelingStep','emotionInput');};
+function continueEntry(){if(busy||!window.introReady||!input.value.trim())return;selected={name:input.value.trim(),color:colorFor(input.value)};reflection='';$('questionPrompt').textContent=questionFor();animateFeeling();switchStage('questionStep','questionPrompt');}
 $('continueButton').onclick=continueEntry;input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){e.preventDefault();continueEntry();}});
-input.addEventListener('input',()=>{$('continueButton').disabled=!input.value.trim();if(selected)selected={name:input.value.trim(),color:colorFor(input.value)};clearReflection();});
-function clearReflection(){reflection='';$('aiOutput').textContent='';$('feedbackActions').hidden=true;$('correctionBlock').hidden=true;$('correction').value='';}
-$('context').addEventListener('input',clearReflection);
+input.addEventListener('input',()=>{$('continueButton').disabled=!input.value.trim();});
+function editContext(){$('context').placeholder=$('questionPrompt').textContent;$('contextLabel').textContent=$('questionPrompt').textContent;switchStage('contextStep','context');}
+$('questionPrompt').onclick=editContext;$('editAnswer').onclick=editContext;
+$('context').addEventListener('input',()=>{$('contextSubmit').disabled=!$('context').value.trim();});
+function recommendationFor(){const names=recognizeFeelings(input.value).map(x=>x.name);
+ if(names.some(x=>['anxious','worried','stressed','overwhelmed','afraid'].includes(x)))return 'Take a short pause. Feel the support of the floor or chair, then gently notice a few things you can see and hear. When you are ready, choose one small action you can take next.';
+ if(names.some(x=>['angry','furious','annoyed','frustrated','jealous'].includes(x)))return 'Give yourself a little space before deciding what to do. Notice what matters to you in this situation, then choose a small response that reflects how you want to treat yourself and others.';
+ if(names.some(x=>['sad','lonely','grieving','hurt','ashamed','guilty'].includes(x)))return 'Try putting into words what you would say to someone you care about in this situation. Choose one small act of care for yourself, or reach out to someone you trust.';
+ return 'Choose one thing that matters to you in what you wrote. Give it a small, concrete place in your day: a conversation, a few minutes of attention, or one manageable action.';
+}
+function submitContext(){if(busy||!$('context').value.trim())return;reflection=recommendationFor();$('recommendation').textContent=reflection;animateFeeling();switchStage('resultStep','recommendation');}
+$('contextSubmit').onclick=submitContext;$('context').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();submitContext();}});
+function resetMoment(){if(busy)return;input.value='';$('context').value='';reflection='';selected=null;$('continueButton').disabled=true;$('contextSubmit').disabled=true;switchStage('launchPrompt','launchPrompt');}
+$('newMoment').onclick=resetMoment;
 function openDialog(id){$(id).showModal();}
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>b.closest('dialog').close());
 document.querySelectorAll('dialog').forEach(d=>d.addEventListener('click',e=>{if(e.target===d){const r=d.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)d.close();}}));
 $('accountButton').onclick=()=>openDialog('accountDialog');$('aboutButton').onclick=()=>openDialog('aboutDialog');
-document.querySelector('.brand').onclick=e=>{e.preventDefault();document.querySelectorAll('dialog[open]').forEach(d=>d.close());input.focus();};
+document.querySelector('.brand').onclick=e=>{e.preventDefault();document.querySelectorAll('dialog[open]').forEach(d=>d.close());if(window.introReady)$(stage==='feelingStep'?'emotionInput':stage==='contextStep'?'context':stage==='questionStep'?'questionPrompt':stage==='resultStep'?'recommendation':'launchPrompt').focus();};
 $('memoriesButton').onclick=()=>{renderMemories();openDialog('memoriesDialog');};
 $('saveMemory').onclick=()=>{if(busy)return;if(!input.value.trim()){input.focus();return;}if(memories.length>=500){notify('Delete a moment before adding another. This prototype holds 500.');return;}
  const m={id:crypto.randomUUID(),emotion:input.value.trim(),context:$('context').value.trim(),at:new Date().toISOString()};
  if(reflection)m.reflection=reflection;
  if(!persist([m,...memories]))return;
- window.digitalPulse?.(selected?.color||'#b6c0b8');input.value='';$('context').value='';selected=null;$('contextStep').hidden=true;$('reflectionPanel').hidden=true;$('continueButton').disabled=true;clearReflection();$('stepLabel').textContent='01 / CHECK IN';window.setDigitalScene?.('prompt');notify(deviceStorage?'Moment saved on this device.':'Moment saved for this session.');input.focus();};
+ resetMoment();notify(deviceStorage?'Moment saved on this device.':'Moment saved.');};
 function renderMemories(){const list=$('memoryList');list.replaceChildren();if(!memories.length){const e=document.createElement('div');e.className='empty-state';const h=document.createElement('h3');h.textContent='Your collection starts here.';const p=document.createElement('p');p.textContent='Saved moments will appear here.';e.append(h,p);list.append(e);return;}
  for(const m of memories){const card=document.createElement('article');card.className='memory-card';const head=document.createElement('div');head.className='memory-heading';const h=document.createElement('h3');h.textContent=m.emotion;const t=document.createElement('time');t.dateTime=m.at;t.textContent=new Date(m.at).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});head.append(h,t);const p=document.createElement('p');p.textContent=m.context||'No context added.';card.append(head,p);
  if(typeof m.reflection==='string'){const a=document.createElement('details'),summary=document.createElement('summary'),text=document.createElement('p');summary.textContent='Reflection';text.textContent=m.reflection;a.append(summary,text);card.append(a);}
  const b=document.createElement('button');b.className='memory-delete';b.textContent='Delete moment';b.onclick=()=>{pendingDelete=m.id;openDialog('deleteDialog');};card.append(b);list.append(card);}}
 $('confirmDelete').onclick=()=>{if(persist(memories.filter(m=>m.id!==pendingDelete))){renderMemories();$('deleteDialog').close();notify('Moment deleted.');pendingDelete=null;}};
 $('rememberDevice').onchange=e=>{try{if(e.target.checked)localStorage.setItem(STORAGE_KEY,JSON.stringify(memories));else localStorage.removeItem(STORAGE_KEY);deviceStorage=e.target.checked;storageLabel();}catch{e.target.checked=deviceStorage;notify('Could not change device storage.');}};
-$('closeReflection').onclick=()=>{$('reflectionPanel').hidden=true;};
-const prompts=['What feels most important about this moment?','What would you like to remember about how you feel right now?','What would feel supportive to you right now?','Is there anything else you are feeling alongside this?'];
-function showReflection(alternate=false){if(!window.introReady||!input.value.trim())return;if(alternate)promptIndex=(promptIndex+1)%prompts.length;reflection=prompts[promptIndex];$('reflectionPanel').hidden=false;$('aiOutput').textContent=reflection;$('feedbackActions').hidden=false;$('correctionBlock').hidden=true;}
-$('contextSubmit').onclick=()=>{showReflection();animateFeeling();};
-$('context').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();$('contextSubmit').click();}});
-$('fits').onclick=()=>{$('feedbackActions').hidden=true;};
-$('notQuite').onclick=()=>showReflection(true);
 storageLabel();
 </script>
 <script>'use strict';
@@ -129,11 +127,11 @@ function setup(){width=innerWidth;height=innerHeight;const d=Math.min(devicePixe
  makeTargets();draw(0);
 }
 function makeTargets(){
- const layer=document.createElement('canvas');layer.width=width;layer.height=height;const g=layer.getContext('2d'),r=input.getBoundingClientRect(),s=getComputedStyle(input);
- g.font=s.fontWeight+' '+s.fontSize+' '+s.fontFamily;g.letterSpacing=s.letterSpacing;g.textBaseline='alphabetic';g.fillStyle=getComputedStyle(input,'::placeholder').color;
+ const layer=document.createElement('canvas');layer.width=width;layer.height=height;const g=layer.getContext('2d'),r=$('launchPrompt').getBoundingClientRect(),s=getComputedStyle($('launchPrompt'));
+ g.font=s.fontWeight+' '+s.fontSize+' '+s.fontFamily;g.letterSpacing=s.letterSpacing;g.textBaseline='alphabetic';g.fillStyle=s.color;
  const metrics=g.measureText('Mg'),line=parseFloat(s.lineHeight)||parseFloat(s.fontSize)*1.2;
  const baseline=r.top+parseFloat(s.paddingTop)+(line+metrics.fontBoundingBoxAscent-metrics.fontBoundingBoxDescent)/2;
- g.fillText(input.placeholder,r.left+parseFloat(s.paddingLeft),Number.isFinite(baseline)?baseline:r.top+parseFloat(s.paddingTop)+parseFloat(s.fontSize));
+ g.fillText($('launchPrompt').textContent,r.left+parseFloat(s.paddingLeft),Number.isFinite(baseline)?baseline:r.top+parseFloat(s.paddingTop)+parseFloat(s.fontSize));
  textLayer=layer;
  const pixels=g.getImageData(0,0,width,height).data;targets=[];
  for(let y=Math.max(0,Math.floor(r.top));y<Math.min(height,r.bottom);y+=2)for(let x=Math.max(0,Math.floor(r.left));x<Math.min(width,r.right);x+=2)if(pixels[(y*width+x)*4+3]>100)targets.push({x,y});
@@ -144,12 +142,12 @@ function setScene(s){if(!window.introReady)return;scene=s;document.body.dataset.
 function unlock(){
  const elapsed=performance.now()-startedAt;
  if(!IntroTiming.canType(elapsed)){setTimeout(unlock,IntroTiming.durationMs-elapsed);return;}
- window.introReady=true;scene='prompt';document.body.dataset.scene=scene;$('main').inert=false;$('wakeSky').hidden=true;$('introStatus').textContent='Ready. You can now type your entry.';
+ window.introReady=true;scene='prompt';document.body.dataset.scene=scene;$('main').inert=false;$('wakeSky').hidden=true;$('introStatus').textContent='Ready. Select Today I’m feeling to begin.';
  draw(0);
 }
 window.digitalPulse=colors=>{if(!colors||Array.isArray(colors)&&!colors.length)return;previousColors=[...currentColors];palette=Array.isArray(colors)?colors:[colors];tint=palette[0];colored=true;pulse=clock;draw(0);};
 const laneHeights=[.17,.27,.36,.57,.69,.79,.88];
-function laneY(i){return height*laneHeights[i]+Math.sin(clock*.00006+i*1.7)*height*.009-(camera.y-.5)*(6+i*2);}
+function laneY(i,x=width*.5){const age=pulse<0?99999:clock-pulse;const envelope=paused?0:Math.sin(Math.PI*Math.min(1,age/6000));const wave=Math.sin(x/width*Math.PI*2.3-clock*.0005+i*.7)*height*.018;const beat=Math.sin(age*.006-x/width*7+i*.4)*Math.pow(Math.max(0,Math.sin(age*.003)),3)*height*.045*envelope;return height*laneHeights[i]+wave+beat-(camera.y-.5)*(6+i*2);}
 function blendColor(a,b,t){const channels=[1,3,5].map(i=>Math.round(parseInt(a.slice(i,i+2),16)*(1-t)+parseInt(b.slice(i,i+2),16)*t).toString(16).padStart(2,'0'));return '#'+channels.join('');}
 function lightBand(x,y,w,h,color,strength){
  ctx.save();ctx.translate(x,y);ctx.scale(w,h);
@@ -168,16 +166,19 @@ function draw(dt){
   const y=laneY(i),color=currentColors[i],sweep=Math.sin(clock*.00007+i*2);
   const x=width*(.5+sweep*.23+kick*Math.sin(age*.0018+i*.45)*.3)-(camera.x-.5)*18;
   const dim=i===2||i===3?.52:1;
-  lightBand(x,y,width*(.65+i%3*.12),height*(.013+i%2*.007),color,arrival*dim*(.28+kick*.35));
-  lightBand(x,y,width*.6,1.2+i%2,color,arrival*dim*(.32+kick*.4));
-  lightBand(x-width*.14,y,width*.19,.42,color,arrival*dim*.35);
+  ctx.beginPath();for(let px=-30;px<=width+30;px+=12){const py=laneY(i,px);if(px===-30)ctx.moveTo(px,py);else ctx.lineTo(px,py);}
+  const ribbon=ctx.createLinearGradient(0,0,width,0);ribbon.addColorStop(0,color+'00');ribbon.addColorStop(.25,color+'90');ribbon.addColorStop(.65,color+'b0');ribbon.addColorStop(1,color+'00');ctx.strokeStyle=ribbon;
+  ctx.globalAlpha=arrival*dim*(.07+kick*.07);ctx.lineWidth=16;ctx.stroke();
+  ctx.globalAlpha=arrival*dim*(.15+kick*.1);ctx.lineWidth=4;ctx.stroke();
+  ctx.globalAlpha=arrival*dim*(.32+kick*.2);ctx.lineWidth=.8;ctx.stroke();
+
  }
  for(let j=0;j<points.length;j++){
   const p=points[j],layer=p.lane,depth=.35+p.s*.8;
   if(!paused)p.travel=(p.travel+dt*(.000006+depth*.000009)*(1+kick*3))%1;
   const x0=p.travel*(width+160)-80-(camera.x-.5)*22*depth;
   const inBand=j%3!==0;
-  const y0=inBand?laneY(layer)+p.offset*height*.06:height*(p.y+1)/2;
+  const y0=inBand?laneY(layer,x0)+p.offset*height*.06:height*(p.y+1)/2;
   let x=x0,y=y0;
   const target=targets[j],forming=target&&!paused&&elapsed<15000;
   const progress=forming?Math.min(1,Math.max(0,(elapsed-4000-p.s*600)/6500)):0;
@@ -192,7 +193,7 @@ function draw(dt){
   if(inBand&&p.s>.82&&progress<.08){
    const reach=(22+p.s*90)*depth*(1+kick*1.8),tail=ctx.createLinearGradient(x-reach,y,x+reach*.12,y);
    tail.addColorStop(0,color+'00');tail.addColorStop(.84,color+'75');tail.addColorStop(.9,color+'b0');tail.addColorStop(1,color+'00');
-   ctx.strokeStyle=tail;ctx.lineWidth=.5;ctx.globalAlpha=alpha*.7;ctx.beginPath();ctx.moveTo(x-reach,y);ctx.lineTo(x+reach*.12,y);ctx.stroke();
+   ctx.strokeStyle=tail;ctx.lineWidth=.5;ctx.globalAlpha=alpha*.7;ctx.beginPath();ctx.moveTo(x-reach,laneY(layer,x-reach)+p.offset*height*.06);ctx.quadraticCurveTo(x-reach*.3,y,x,y);ctx.stroke();
   }
   ctx.globalAlpha=alpha;ctx.fillStyle=forming?'#555b58':inBand?color:'#bac2cb';
   ctx.beginPath();ctx.arc(x,y,forming?.45:.35+p.s*.45,0,Math.PI*2);ctx.fill();
@@ -204,11 +205,11 @@ function draw(dt){
  ctx.globalAlpha=1;
 }
 function animate(now){const dt=Math.min(40,last?now-last:16);last=now;clock+=dt;draw(dt);if(!paused&&!document.hidden)frame=requestAnimationFrame(animate);}
-function motion(){cancelAnimationFrame(frame);last=0;$('motionButton').textContent=paused?'Resume motion':'Pause motion';$('motionButton').setAttribute('aria-pressed',String(paused));draw(0);if(!paused&&!document.hidden)frame=requestAnimationFrame(animate);}
+function motion(){cancelAnimationFrame(frame);last=0;$('reduceMotion').checked=paused;draw(0);if(!paused&&!document.hidden)frame=requestAnimationFrame(animate);}
 document.body.dataset.scene='gathering';
 document.addEventListener('pointermove',e=>{mouse.x=e.clientX/width;mouse.y=e.clientY/height;},{passive:true});
 $('wakeSky').onclick=()=>{};
-$('motionButton').onclick=()=>{paused=!paused;motion();};
+$('reduceMotion').onchange=e=>{paused=e.target.checked;motion();};
 media.addEventListener('change',e=>{paused=e.matches;motion();});
 document.addEventListener('visibilitychange',()=>{if(!window.introReady&&IntroTiming.canType(performance.now()-startedAt))unlock();motion();});
 window.addEventListener('resize',setup);setup();motion();

@@ -15,28 +15,17 @@
   <nav aria-label="Main navigation"><button id="memoriesButton"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v17l-7-4-7 4z"/></svg>Memories <span id="count">0</span></button><button id="accountButton" class="account">Account <span aria-hidden="true">↗</span></button></nav>
 </header>
 <button id="wakeSky" class="wake-sky" tabindex="-1" aria-label="Wake the stars and name a feeling"><span>Enter your sky</span></button>
-<p id="introStatus" class="sr-only" role="status">The opening lasts 8 seconds. Typing becomes available afterwards.</p>
+<p id="introStatus" class="sr-only" role="status">The opening lasts 8 seconds. Select Today I’m feeling afterwards to begin.</p>
 <main id="main" inert>
- <section class="entry" aria-label="Name your feeling">
-  <p class="eyebrow" id="stepLabel">01 / CHECK IN</p>
-  <label for="emotionInput" class="sr-only">Today I’m feeling</label>
-  <div class="input-line"><input id="emotionInput" maxlength="160" autocomplete="off" placeholder="Today I’m feeling" aria-label="How you are feeling"><button id="continueButton" aria-label="Submit entry" disabled>↵</button></div>
-  <section id="contextStep" hidden>
-   <label for="context">What happened?</label>
-   <textarea id="context" rows="3" maxlength="4000" placeholder="Write what’s on your mind."></textarea>
-   <div class="actions"><button id="contextSubmit" class="primary" aria-label="Save context">↵</button><button id="saveMemory">Save moment</button></div>
-  </section>
-  <section id="reflectionPanel" aria-labelledby="reflectionTitle" hidden>
-   <div class="panel-heading"><h2 id="reflectionTitle" class="sr-only">Reflection prompt</h2><button id="closeReflection" aria-label="Close response">×</button></div>
-   <p id="aiAvailability" role="status"></p>
-
-   <div id="aiOutput" role="status" aria-live="polite"></div>
-   <div id="feedbackActions" hidden><div class="actions"><button id="fits">Keep this prompt</button><button id="notQuite">Another prompt</button></div></div>
-   <div id="correctionBlock" hidden><label for="correction">What did it miss?</label><textarea id="correction" maxlength="1000" rows="2"></textarea><button id="reviseAI" class="primary">Reconsider ↗</button></div>
-  </section>
+ <section class="entry" id="flowSurface" aria-label="Your moment">
+  <button id="launchPrompt" class="flow-words">Today I’m feeling</button>
+  <div id="feelingStep" hidden><label for="emotionInput" class="sr-only">How are you feeling?</label><div class="input-line"><input id="emotionInput" maxlength="160" autocomplete="off" placeholder="Today I’m feeling"><button id="continueButton" aria-label="Submit feeling" disabled>↵</button></div></div>
+  <div id="questionStep" hidden><button id="questionPrompt" class="flow-words"></button></div>
+  <div id="contextStep" hidden><label id="contextLabel" for="context" class="sr-only">What happened?</label><div class="context-line"><textarea id="context" rows="3" maxlength="4000" placeholder="What happened?"></textarea><button id="contextSubmit" aria-label="Submit your answer" disabled>↵</button></div></div>
+  <div id="resultStep" hidden><p id="recommendation" tabindex="-1"></p><div class="actions"><button id="saveMemory">Save moment</button><button id="editAnswer">Add more</button><button id="newMoment">New moment</button></div></div>
  </section>
 </main>
-<footer><button id="aboutButton">About this space</button><span id="storageLabel">Session only</span><button id="motionButton" aria-pressed="false">Pause motion <span aria-hidden="true">Ⅱ</span></button></footer>
+<footer><button id="aboutButton">About this space</button></footer>
 <div id="status" role="status" aria-live="polite" class="toast" hidden></div>
 <dialog id="memoriesDialog" class="memory-dialog" aria-labelledby="memoriesTitle">
  <div class="dialog-top"><div><p class="eyebrow">YOUR COLLECTION</p><h2 id="memoriesTitle">A sky of moments.</h2></div><button class="close" data-close aria-label="Close memories">×</button></div>
@@ -44,7 +33,7 @@
  <div id="memoryList"></div>
 </dialog>
 <dialog id="accountDialog" aria-labelledby="accountTitle"><button class="close" data-close aria-label="Close account">×</button><p class="eyebrow">ACCOUNT PREVIEW</p><h2 id="accountTitle">Your own space.</h2><p>Account creation and sign-in are planned for the next version. This interface study does not collect email addresses or passwords.</p><p>For now, you can keep memories for this session, or choose to save them on this device. They won’t sync between devices.</p><button class="primary" data-close>Continue without an account</button></dialog>
-<dialog id="aboutDialog" aria-labelledby="aboutTitle"><button class="close" data-close aria-label="Close about">×</button><p class="eyebrow">ABOUT AFTERGLOW</p><h2 id="aboutTitle">A place to name it.</h2><p>Choose a feeling, add the context you want to remember, and come back to it later. Your choices shape the colors on the screen.</p><p>Use your own words. The palette is expressive, not a scientific scale. No feeling is scored as good or bad.</p><p>This prototype is a reflective journal, not a diagnostic tool or a mental health treatment. Reflection questions are prewritten journal prompts. Entries are processed in this browser and are not sent to an AI service. Entries are not monitored.</p><p class="research">Research background: <a href="https://pubmed.ncbi.nlm.nih.gov/17576282/" target="_blank" rel="noopener noreferrer">Putting feelings into words (2007)</a>.</p><button class="primary" data-close>Back to my sky</button></dialog>
+<dialog id="aboutDialog" aria-labelledby="aboutTitle"><button class="close" data-close aria-label="Close about">×</button><p class="eyebrow">ABOUT AFTERGLOW</p><h2 id="aboutTitle">A place to name it.</h2><p>Choose a feeling, add the context you want to remember, and come back to it later. Your choices shape the colors on the screen.</p><p>Use your own words. The palette is expressive, not a scientific scale. No feeling is scored as good or bad.</p><p>This prototype is a reflective journal, not a diagnostic tool or a mental health treatment. Reflection questions are prewritten journal prompts. Entries are processed in this browser and are not sent to an AI service. Entries are not monitored.</p><p class="research">Research background: <a href="https://pubmed.ncbi.nlm.nih.gov/17576282/" target="_blank" rel="noopener noreferrer">Putting feelings into words (2007)</a>.</p><p>Suggested activities are prewritten and selected by the feeling words you enter. Your context is saved with your moment; it is not interpreted by AI.</p><p><a href="https://www.who.int/publications/i/item/9789240003927" target="_blank" rel="noopener noreferrer">Activity background: WHO stress-management guide</a></p><label><input type="checkbox" id="reduceMotion"> Reduce animation</label><button class="primary" data-close>Back to my sky</button></dialog>
 <dialog id="deleteDialog" aria-labelledby="deleteTitle"><h2 id="deleteTitle">Delete this moment?</h2><p>This removes it from your collection and any device copy. This cannot be undone.</p><div class="dialog-actions"><button data-close>Keep it</button><button id="confirmDelete" class="danger">Delete moment</button></div></dialog>
 <script src="intro-timing.js"></script>
 <script src="app.js"></script>

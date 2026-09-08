@@ -20,3 +20,6 @@ The current deployment is owner-private. Before public launch, implement support
 - The user also referenced Julia Klodkina's Allians site. Its exact URL has not yet been identified.
 - OpenAI Responses documentation: https://developers.openai.com/api/docs/guides/migrate-to-responses
 - Prior concept precedents: Stellar (https://apps.apple.com/us/app/stellar-mood-journal-stars/id6776367622), Offlog (https://synaphi.github.io/offlog/), and Silk (https://weavesilk.com/). No uniqueness or legal-clearance claim is made.
+
+## Sequential interaction
+The opening reveals a text button. Clicking it opens the only feeling input. Enter fades that away into a clickable question; clicking the question opens the context editor in the same space. Enter then replaces the editor with a prewritten activity, chosen by recognized feeling words, with Save moment / Add more / New moment actions. Context is retained but not semantically interpreted. Activities draw on general grounding, kindness and values exercises in WHO’s Doing What Matters in Times of Stress, not a clinical assessment. Wave ribbons rise and fall with a six-second rhythmic submission pulse; stars follow the same curves. No check-in/status footer labels. Reduced motion follows the OS and can be changed in About.
