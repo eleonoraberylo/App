@@ -65,7 +65,7 @@ function notify(text){$('status').textContent=text;$('status').hidden=false;clea
 try{const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');if(Array.isArray(saved)){memories=saved.filter(m=>m&&typeof m.id==='string'&&typeof m.emotion==='string'&&m.emotion.length<=160&&typeof m.context==='string'&&Number.isFinite(Date.parse(m.at))).slice(0,500);deviceStorage=true;}}catch{notify('Device storage is unavailable. Entries will stay in this session.');}
 function storageLabel(){$('rememberDevice').checked=deviceStorage;$('count').textContent=memories.length;}
 function persist(next){if(deviceStorage){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(next));}catch{notify('Could not save on this device. Your changes have not been applied.');return false;}}memories=next;storageLabel();return true;}
-const feelingCatalog=[{"name":"peaceful","color":"#b4d6c6","words":["peaceful","peace","at peace"]},{"name":"calm","color":"#a9cfc8","words":["calm","calmness"]},{"name":"relaxed","color":"#c1d7bb","words":["relaxed","relaxation"]},{"name":"content","color":"#cfd8b4","words":["content","contentment","contented"]},{"name":"relieved","color":"#b5dacc","words":["relieved","relief"]},{"name":"grateful","color":"#d9cba8","words":["grateful","gratitude","thankful"]},{"name":"happy","color":"#e0d0a8","words":["happy","happiness"]},{"name":"joyful","color":"#e6c39d","words":["joyful","joy","joyous"]},{"name":"excited","color":"#e6b99e","words":["excited","excitement"]},{"name":"hopeful","color":"#c6badf","words":["hopeful","hope"]},{"name":"proud","color":"#cbb2d6","words":["proud","pride"]},{"name":"confident","color":"#b2c5d8","words":["confident","confidence"]},{"name":"loved","color":"#d9b9cd","words":["loved","love","loving"]},{"name":"affectionate","color":"#e0bdc8","words":["affectionate","affection"]},{"name":"connected","color":"#c2ccbd","words":["connected","connection"]},{"name":"amused","color":"#e0c4b4","words":["amused","amusement"]},{"name":"curious","color":"#bad1dc","words":["curious","curiosity","interested"]},{"name":"inspired","color":"#c4bee2","words":["inspired","inspiration"]},{"name":"awed","color":"#b8b6d8","words":["awed","awe","in awe"]},{"name":"nostalgic","color":"#c6b5c3","words":["nostalgic","nostalgia"]},{"name":"sad","color":"#b2c9df","words":["sad","sadness","unhappy"]},{"name":"lonely","color":"#abbcd2","words":["lonely","loneliness","isolated"]},{"name":"disappointed","color":"#b6b4ca","words":["disappointed","disappointment"]},{"name":"grieving","color":"#a6b0c6","words":["grieving","grief","heartbroken"]},{"name":"hurt","color":"#c3aebf","words":["hurt","wounded"]},{"name":"guilty","color":"#c4baa8","words":["guilty","guilt"]},{"name":"ashamed","color":"#bcaab4","words":["ashamed","shame"]},{"name":"embarrassed","color":"#d6b5bd","words":["embarrassed","embarrassment"]},{"name":"anxious","color":"#d9d0b8","words":["anxious","anxiety","uneasy"]},{"name":"worried","color":"#d3c79f","words":["worried","worry"]},{"name":"stressed","color":"#ded2a9","words":["stressed","stress","under stress"]},{"name":"overwhelmed","color":"#cbbcc6","words":["overwhelmed","overwhelm"]},{"name":"afraid","color":"#bcb9d0","words":["afraid","fear","scared","fearful"]},{"name":"insecure","color":"#b7bfd0","words":["insecure","insecurity"]},{"name":"angry","color":"#d7b0ae","words":["angry","anger","mad"]},{"name":"furious","color":"#d5a2ab","words":["furious","fury","enraged"]},{"name":"annoyed","color":"#dfbfa9","words":["annoyed","annoyance","irritated"]},{"name":"frustrated","color":"#d9b49d","words":["frustrated","frustration"]},{"name":"jealous","color":"#c0c4a7","words":["jealous","jealousy","envious","envy"]},{"name":"disgusted","color":"#b8c1aa","words":["disgusted","disgust"]}];
+const feelingCatalog=[{"name":"peaceful","color":"#8adfb7","words":["peaceful","peace","at peace"]},{"name":"calm","color":"#7cdbc9","words":["calm","calmness"]},{"name":"relaxed","color":"#a4db95","words":["relaxed","relaxation"]},{"name":"content","color":"#cce288","words":["content","contentment","contented"]},{"name":"relieved","color":"#88e5c2","words":["relieved","relief"]},{"name":"grateful","color":"#e6ca72","words":["grateful","gratitude","thankful"]},{"name":"happy","color":"#e6d16d","words":["happy","happiness"]},{"name":"joyful","color":"#e6b455","words":["joyful","joy","joyous"]},{"name":"excited","color":"#e69b57","words":["excited","excitement"]},{"name":"hopeful","color":"#ab8de6","words":["hopeful","hope"]},{"name":"proud","color":"#c586e0","words":["proud","pride"]},{"name":"confident","color":"#85b4e4","words":["confident","confidence"]},{"name":"loved","color":"#e090c2","words":["loved","love","loving"]},{"name":"affectionate","color":"#e692ad","words":["affectionate","affection"]},{"name":"connected","color":"#adc6a1","words":["connected","connection"]},{"name":"amused","color":"#e6aa82","words":["amused","amusement"]},{"name":"curious","color":"#90c9e5","words":["curious","curiosity","interested"]},{"name":"inspired","color":"#a192e6","words":["inspired","inspiration"]},{"name":"awed","color":"#918ce1","words":["awed","awe","in awe"]},{"name":"nostalgic","color":"#c297ba","words":["nostalgic","nostalgia"]},{"name":"sad","color":"#7fb9e6","words":["sad","sadness","unhappy"]},{"name":"lonely","color":"#7da7de","words":["lonely","loneliness","isolated"]},{"name":"disappointed","color":"#9893ca","words":["disappointed","disappointment"]},{"name":"grieving","color":"#7d96cd","words":["grieving","grief","heartbroken"]},{"name":"hurt","color":"#c28db8","words":["hurt","wounded"]},{"name":"guilty","color":"#c8af82","words":["guilty","guilt"]},{"name":"ashamed","color":"#b98ca5","words":["ashamed","shame"]},{"name":"embarrassed","color":"#de8b9f","words":["embarrassed","embarrassment"]},{"name":"anxious","color":"#e1ca8e","words":["anxious","anxiety","uneasy"]},{"name":"worried","color":"#e6cb67","words":["worried","worry"]},{"name":"stressed","color":"#e6d770","words":["stressed","stress","under stress"]},{"name":"overwhelmed","color":"#c5a0b9","words":["overwhelmed","overwhelm"]},{"name":"afraid","color":"#9e97d0","words":["afraid","fear","scared","fearful"]},{"name":"insecure","color":"#93a7d2","words":["insecure","insecurity"]},{"name":"angry","color":"#e5837e","words":["angry","anger","mad"]},{"name":"furious","color":"#e66b81","words":["furious","fury","enraged"]},{"name":"annoyed","color":"#e6a770","words":["annoyed","annoyance","irritated"]},{"name":"frustrated","color":"#e6995f","words":["frustrated","frustration"]},{"name":"jealous","color":"#bfc980","words":["jealous","jealousy","envious","envy"]},{"name":"disgusted","color":"#abc188","words":["disgusted","disgust"]}];
 function recognizeFeelings(text){
  const clauses=text.toLowerCase().replace(/[’]/g,"'").split(/[,;.!?]|\b(?:but|however)\b/);
  const found=[];
@@ -120,7 +120,7 @@ storageLabel();
 <script>'use strict';
 const canvas=$('sky'),ctx=canvas.getContext('2d'),media=matchMedia('(prefers-reduced-motion: reduce)');
 const startedAt=performance.now();
-let width=innerWidth,height=innerHeight,points=[],targets=[],textLayer=null,clock=0,last=0,frame=0,scene='gathering',pulse=-1,tint='#cbd3cc',paused=media.matches,palette=['#b9c4df','#d7bed0','#b8d4cb'],colored=false,currentColors=Array.from({length:14},(_,i)=>['#b9c4df','#d7bed0','#b8d4cb'][i%3]),previousColors=[],activeLane=-1;
+let width=innerWidth,height=innerHeight,points=[],targets=[],textLayer=null,clock=0,last=0,frame=0,scene='gathering',pulse=-1,tint='#cbd3cc',paused=media.matches,palette=['#789bdd','#d18ebb','#78c6ae'],colored=false,currentColors=Array.from({length:14},(_,i)=>['#789bdd','#d18ebb','#78c6ae'][i%3]),previousColors=[],activeLane=-1;
 const mouse={x:.5,y:.5},camera={x:.5,y:.5};
 window.introReady=false;
 function setup(){width=innerWidth;height=innerHeight;const d=Math.min(devicePixelRatio||1,2);canvas.width=width*d;canvas.height=height*d;ctx.setTransform(d,0,0,d,0,0);
@@ -149,15 +149,30 @@ function unlock(){
 }
 window.digitalPulse=colors=>{if(!colors||Array.isArray(colors)&&!colors.length)return;const color=Array.isArray(colors)?colors[0]:colors;previousColors=[...currentColors];palette=[...currentColors];activeLane=parseInt(color.slice(1),16)%14;palette[activeLane]=color;tint=color;colored=true;pulse=clock;draw(0);};
 const laneHeights=Array.from({length:14},(_,i)=>.06+i*.067);
-function buzzFor(i){if(paused)return 0;const age=clock-pulse;const extra=i===activeLane&&pulse>=0&&age<6000?Math.sin(Math.PI*age/6000):0;return .12+extra*2.5;}
+function activation(){
+ if(paused)return {lane:-1,progress:0,strength:0};
+ const age=clock-pulse;
+ if(pulse>=0&&age>=0&&age<1400)return {lane:activeLane,progress:age/1400,strength:1.55};
+ const slot=Math.floor(clock/1550),within=clock%1550;
+ return {lane:within<1150?(slot*5)%14:-1,progress:within/1150,strength:.85};
+}
+function buzzFor(i){const event=activation();return event.lane===i?.35*event.strength:0;}
+const cardiogram=[[-1,0],[-.72,0],[-.56,-.1],[-.4,0],[-.25,.14],[-.10,-1],[.02,1],[.15,0],[.36,-.28],[.53,-.38],[.72,0],[1,0]];
+function angularBeat(z){
+ for(let j=1;j<cardiogram.length;j++){const [x,y]=cardiogram[j],previous=cardiogram[j-1];if(z>=previous[0]&&z<=x)return previous[1]+(y-previous[1])*(z-previous[0])/(x-previous[0]);}
+ return 0;
+}
 function laneY(i,x=width*.5){
- const spacing=Math.max(200,Math.min(420,width*.4));
- const phase=x/spacing*Math.PI*2-clock*.0032+i*.46;
- // Continuous rhythm from the first frame; submission never resets its phase.
- const rhythm=(Math.sin(phase)+.24*Math.sin(phase*3))/1.12;
- const amplitude=Math.min(42,height*.043)*( .75+(i%3)*.12);
- const buzz=buzzFor(i)*(Math.sin(x*.1-clock*.04+i)+.45*Math.sin(x*.19+clock*.033))*1.2;
- return height*laneHeights[i]+rhythm*amplitude+buzz-(camera.y-.5)*(5+i);
+ const baseline=height*laneHeights[i]-(camera.y-.5)*(5+i);
+ const calm=Math.sin(x/width*4-clock*.00025+i)*2+Math.sin(x/width*9+clock*.00013+i*.7);
+ const event=activation();if(event.lane!==i)return baseline+calm;
+ const center=-150+event.progress*(width+300);
+ const z=(x-center)/Math.min(135,width*.23);
+ const envelope=Math.min(1,event.progress*12,(1-event.progress)*12);
+ const amplitude=Math.min(65,height*.09,height*Math.min(laneHeights[i],1-laneHeights[i])*.72);
+ const spike=angularBeat(z)*amplitude*event.strength*envelope;
+ const jitter=Math.abs(z)<1?Math.sin(x*.8-clock*.09)*event.strength*.65*envelope:0;
+ return baseline+calm+spike+jitter;
 }
 function blendColor(a,b,t){const channels=[1,3,5].map(i=>Math.round(parseInt(a.slice(i,i+2),16)*(1-t)+parseInt(b.slice(i,i+2),16)*t).toString(16).padStart(2,'0'));return '#'+channels.join('');}
 function lightBand(x,y,w,h,color,strength){
@@ -176,12 +191,12 @@ function draw(dt){
  for(let i=0;i<14;i++){
   const y=laneY(i),color=currentColors[i],sweep=Math.sin(clock*.00007+i*2),localKick=i===activeLane?kick:0,buzz=buzzFor(i);
   const x=width*(.5+sweep*.23+kick*Math.sin(age*.0018+i*.45)*.3)-(camera.x-.5)*18;
-  const dim=laneHeights[i]>.38&&laneHeights[i]<.62?.26:.65;
-  ctx.beginPath();for(let px=-30;px<=width+30;px+=(i===activeLane?2:5)){const py=laneY(i,px);if(px===-30)ctx.moveTo(px,py);else ctx.lineTo(px,py);}
+  const dim=laneHeights[i]>.38&&laneHeights[i]<.62?.5:.85;
+  ctx.beginPath();for(let px=-30;px<=width+30;px+=(i===activation().lane?1.5:5)){const py=laneY(i,px);if(px===-30)ctx.moveTo(px,py);else ctx.lineTo(px,py);}
   const ribbon=ctx.createLinearGradient(0,0,width,0);ribbon.addColorStop(0,color+'00');ribbon.addColorStop(.25,color+'90');ribbon.addColorStop(.65,color+'b0');ribbon.addColorStop(1,color+'00');ctx.strokeStyle=ribbon;
-  ctx.globalAlpha=arrival*dim*.065;ctx.lineWidth=16;ctx.stroke();
-  ctx.globalAlpha=arrival*dim*.14;ctx.lineWidth=4;ctx.stroke();
-  ctx.globalAlpha=arrival*dim*.36;ctx.lineWidth=.8;ctx.stroke();
+  ctx.globalAlpha=arrival*dim*.1;ctx.lineWidth=16;ctx.stroke();
+  ctx.globalAlpha=arrival*dim*.24;ctx.lineWidth=4;ctx.stroke();
+  ctx.globalAlpha=arrival*dim*.72;ctx.lineWidth=1.05;ctx.stroke();
 
  }
  for(let j=0;j<points.length;j++){

@@ -1,7 +1,7 @@
 'use strict';
 const canvas=$('sky'),ctx=canvas.getContext('2d'),media=matchMedia('(prefers-reduced-motion: reduce)');
 const startedAt=performance.now();
-let width=innerWidth,height=innerHeight,points=[],targets=[],textLayer=null,clock=0,last=0,frame=0,scene='gathering',pulse=-1,tint='#cbd3cc',paused=media.matches,palette=['#b9c4df','#d7bed0','#b8d4cb'],colored=false,currentColors=Array.from({length:14},(_,i)=>['#b9c4df','#d7bed0','#b8d4cb'][i%3]),previousColors=[],activeLane=-1;
+let width=innerWidth,height=innerHeight,points=[],targets=[],textLayer=null,clock=0,last=0,frame=0,scene='gathering',pulse=-1,tint='#cbd3cc',paused=media.matches,palette=['#789bdd','#d18ebb','#78c6ae'],colored=false,currentColors=Array.from({length:14},(_,i)=>['#789bdd','#d18ebb','#78c6ae'][i%3]),previousColors=[],activeLane=-1;
 const mouse={x:.5,y:.5},camera={x:.5,y:.5};
 window.introReady=false;
 function setup(){width=innerWidth;height=innerHeight;const d=Math.min(devicePixelRatio||1,2);canvas.width=width*d;canvas.height=height*d;ctx.setTransform(d,0,0,d,0,0);
@@ -30,15 +30,30 @@ function unlock(){
 }
 window.digitalPulse=colors=>{if(!colors||Array.isArray(colors)&&!colors.length)return;const color=Array.isArray(colors)?colors[0]:colors;previousColors=[...currentColors];palette=[...currentColors];activeLane=parseInt(color.slice(1),16)%14;palette[activeLane]=color;tint=color;colored=true;pulse=clock;draw(0);};
 const laneHeights=Array.from({length:14},(_,i)=>.06+i*.067);
-function buzzFor(i){if(paused)return 0;const age=clock-pulse;const extra=i===activeLane&&pulse>=0&&age<6000?Math.sin(Math.PI*age/6000):0;return .12+extra*2.5;}
+function activation(){
+ if(paused)return {lane:-1,progress:0,strength:0};
+ const age=clock-pulse;
+ if(pulse>=0&&age>=0&&age<1400)return {lane:activeLane,progress:age/1400,strength:1.55};
+ const slot=Math.floor(clock/1550),within=clock%1550;
+ return {lane:within<1150?(slot*5)%14:-1,progress:within/1150,strength:.85};
+}
+function buzzFor(i){const event=activation();return event.lane===i?.35*event.strength:0;}
+const cardiogram=[[-1,0],[-.72,0],[-.56,-.1],[-.4,0],[-.25,.14],[-.10,-1],[.02,1],[.15,0],[.36,-.28],[.53,-.38],[.72,0],[1,0]];
+function angularBeat(z){
+ for(let j=1;j<cardiogram.length;j++){const [x,y]=cardiogram[j],previous=cardiogram[j-1];if(z>=previous[0]&&z<=x)return previous[1]+(y-previous[1])*(z-previous[0])/(x-previous[0]);}
+ return 0;
+}
 function laneY(i,x=width*.5){
- const spacing=Math.max(200,Math.min(420,width*.4));
- const phase=x/spacing*Math.PI*2-clock*.0032+i*.46;
- // Continuous rhythm from the first frame; submission never resets its phase.
- const rhythm=(Math.sin(phase)+.24*Math.sin(phase*3))/1.12;
- const amplitude=Math.min(42,height*.043)*( .75+(i%3)*.12);
- const buzz=buzzFor(i)*(Math.sin(x*.1-clock*.04+i)+.45*Math.sin(x*.19+clock*.033))*1.2;
- return height*laneHeights[i]+rhythm*amplitude+buzz-(camera.y-.5)*(5+i);
+ const baseline=height*laneHeights[i]-(camera.y-.5)*(5+i);
+ const calm=Math.sin(x/width*4-clock*.00025+i)*2+Math.sin(x/width*9+clock*.00013+i*.7);
+ const event=activation();if(event.lane!==i)return baseline+calm;
+ const center=-150+event.progress*(width+300);
+ const z=(x-center)/Math.min(135,width*.23);
+ const envelope=Math.min(1,event.progress*12,(1-event.progress)*12);
+ const amplitude=Math.min(65,height*.09,height*Math.min(laneHeights[i],1-laneHeights[i])*.72);
+ const spike=angularBeat(z)*amplitude*event.strength*envelope;
+ const jitter=Math.abs(z)<1?Math.sin(x*.8-clock*.09)*event.strength*.65*envelope:0;
+ return baseline+calm+spike+jitter;
 }
 function blendColor(a,b,t){const channels=[1,3,5].map(i=>Math.round(parseInt(a.slice(i,i+2),16)*(1-t)+parseInt(b.slice(i,i+2),16)*t).toString(16).padStart(2,'0'));return '#'+channels.join('');}
 function lightBand(x,y,w,h,color,strength){
@@ -57,12 +72,12 @@ function draw(dt){
  for(let i=0;i<14;i++){
   const y=laneY(i),color=currentColors[i],sweep=Math.sin(clock*.00007+i*2),localKick=i===activeLane?kick:0,buzz=buzzFor(i);
   const x=width*(.5+sweep*.23+kick*Math.sin(age*.0018+i*.45)*.3)-(camera.x-.5)*18;
-  const dim=laneHeights[i]>.38&&laneHeights[i]<.62?.26:.65;
-  ctx.beginPath();for(let px=-30;px<=width+30;px+=(i===activeLane?2:5)){const py=laneY(i,px);if(px===-30)ctx.moveTo(px,py);else ctx.lineTo(px,py);}
+  const dim=laneHeights[i]>.38&&laneHeights[i]<.62?.5:.85;
+  ctx.beginPath();for(let px=-30;px<=width+30;px+=(i===activation().lane?1.5:5)){const py=laneY(i,px);if(px===-30)ctx.moveTo(px,py);else ctx.lineTo(px,py);}
   const ribbon=ctx.createLinearGradient(0,0,width,0);ribbon.addColorStop(0,color+'00');ribbon.addColorStop(.25,color+'90');ribbon.addColorStop(.65,color+'b0');ribbon.addColorStop(1,color+'00');ctx.strokeStyle=ribbon;
-  ctx.globalAlpha=arrival*dim*.065;ctx.lineWidth=16;ctx.stroke();
-  ctx.globalAlpha=arrival*dim*.14;ctx.lineWidth=4;ctx.stroke();
-  ctx.globalAlpha=arrival*dim*.36;ctx.lineWidth=.8;ctx.stroke();
+  ctx.globalAlpha=arrival*dim*.1;ctx.lineWidth=16;ctx.stroke();
+  ctx.globalAlpha=arrival*dim*.24;ctx.lineWidth=4;ctx.stroke();
+  ctx.globalAlpha=arrival*dim*.72;ctx.lineWidth=1.05;ctx.stroke();
 
  }
  for(let j=0;j<points.length;j++){

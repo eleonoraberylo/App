@@ -31,3 +31,6 @@ The selected strand now uses the supplied ECG reference shape: small lead-in, na
 
 ## Continuous rhythm
 All strands now follow a continuous, smooth repeating downward/upward waveform from the first frame. Line brightness is constant; the submission effect changes positional vibration only, preserving the underlying phase and rhythm. The selected strand gains extra fine vibration for six seconds, then returns to its normal flow. Reduced motion freezes this movement.
+
+## Angular sequential activation
+Calm, nearly level strands now take turns producing a traveling piecewise-linear cardiogram: one strand per 1.55-second slot, with a quiet interval. Submission temporarily takes priority with a stronger 1.4-second impulse only on the selected emotion strand, followed by ambient sequencing. No synchronized broad sine waves or brightness flashing. Saturation and steady line visibility are increased; typography remains muted.
