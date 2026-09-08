@@ -1,13 +1,14 @@
 'use strict';
 const $=id=>document.getElementById(id),input=$('emotionInput');
 const STORAGE_KEY='afterglow.memories.v1';
-let selected=null,memories=[],deviceStorage=false,pendingDelete=null,toastTimer,reflection='',busy=false;
+let promptIndex=0;let selected=null,memories=[],deviceStorage=false,pendingDelete=null,toastTimer,reflection='',busy=false;
 function notify(text){$('status').textContent=text;$('status').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('status').hidden=true,4500);}
 try{const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');if(Array.isArray(saved)){memories=saved.filter(m=>m&&typeof m.id==='string'&&typeof m.emotion==='string'&&m.emotion.length<=160&&typeof m.context==='string'&&Number.isFinite(Date.parse(m.at))).slice(0,500);deviceStorage=true;}}catch{notify('Device storage is unavailable. Entries will stay in this session.');}
 function storageLabel(){$('storageLabel').textContent=deviceStorage?'Saved on this device':'Session only';$('rememberDevice').checked=deviceStorage;$('count').textContent=memories.length;}
 function persist(next){if(deviceStorage){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(next));}catch{notify('Could not save on this device. Your changes have not been applied.');return false;}}memories=next;storageLabel();return true;}
-function colorFor(name){const colors={peaceful:'#87bfa0',calm:'#87bfa0',stressed:'#c9bd7d',furious:'#b47373',angry:'#b47373',annoyed:'#c5a17e',sad:'#8fa6ba',hopeful:'#b0a9bb',affectionate:'#ba9eae'};return colors[name.toLowerCase().trim()]||'#b6c0b8';}
-function continueEntry(){if(busy||!window.introReady||!input.value.trim())return;selected={name:input.value.trim(),color:colorFor(input.value)};document.documentElement.style.setProperty('--accent',selected.color);$('contextStep').hidden=false;$('stepLabel').textContent='02 / CONTEXT';window.setDigitalScene?.('context');window.digitalPulse?.(selected.color);$('reflectionPanel').hidden=false;askAI();}
+function colorsFor(name){const palette={peaceful:'#5dd6a1',peace:'#5dd6a1',calm:'#5dd6a1',relaxed:'#5dd6a1',stressed:'#e2c45c',stress:'#e2c45c',anxious:'#e2c45c',worried:'#e2c45c',furious:'#e06b74',angry:'#e06b74',anger:'#e06b74',annoyed:'#eaa26a',frustrated:'#eaa26a',sad:'#78aee2',lonely:'#78aee2',hopeful:'#b49be5',happy:'#b49be5',joyful:'#b49be5',affectionate:'#df98bc',loved:'#df98bc',grateful:'#df98bc'};const words=name.toLowerCase().match(/[a-z']+/g)||[];const colors=words.flatMap((word,i)=>palette[word]&&!words.slice(Math.max(0,i-2),i).some(w=>['not','never',"don't",'less'].includes(w))?[palette[word]]:[]);return [...new Set(colors)].slice(0,3).length?[...new Set(colors)].slice(0,3):['#92a9ca','#b6a1c7'];}
+function colorFor(name){return colorsFor(name)[0];}
+function continueEntry(){if(busy||!window.introReady||!input.value.trim())return;selected={name:input.value.trim(),color:colorFor(input.value)};document.documentElement.style.setProperty('--accent',selected.color);$('contextStep').hidden=false;$('stepLabel').textContent='02 / CONTEXT';window.setDigitalScene?.('context');window.digitalPulse?.(colorsFor(input.value));$('reflectionPanel').hidden=false;showReflection();}
 $('continueButton').onclick=continueEntry;input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){e.preventDefault();continueEntry();}});
 input.addEventListener('input',()=>{$('continueButton').disabled=!input.value.trim();if(selected)selected={name:input.value.trim(),color:colorFor(input.value)};clearReflection();});
 function clearReflection(){reflection='';$('aiOutput').textContent='';$('feedbackActions').hidden=true;$('correctionBlock').hidden=true;$('correction').value='';}
@@ -25,21 +26,15 @@ $('saveMemory').onclick=()=>{if(busy)return;if(!input.value.trim()){input.focus(
  window.digitalPulse?.(selected?.color||'#b6c0b8');input.value='';$('context').value='';selected=null;$('contextStep').hidden=true;$('reflectionPanel').hidden=true;$('continueButton').disabled=true;clearReflection();$('stepLabel').textContent='01 / CHECK IN';window.setDigitalScene?.('prompt');notify(deviceStorage?'Moment saved on this device.':'Moment saved for this session.');input.focus();};
 function renderMemories(){const list=$('memoryList');list.replaceChildren();if(!memories.length){const e=document.createElement('div');e.className='empty-state';const h=document.createElement('h3');h.textContent='Your collection starts here.';const p=document.createElement('p');p.textContent='Saved moments will appear here.';e.append(h,p);list.append(e);return;}
  for(const m of memories){const card=document.createElement('article');card.className='memory-card';const head=document.createElement('div');head.className='memory-heading';const h=document.createElement('h3');h.textContent=m.emotion;const t=document.createElement('time');t.dateTime=m.at;t.textContent=new Date(m.at).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});head.append(h,t);const p=document.createElement('p');p.textContent=m.context||'No context added.';card.append(head,p);
- if(typeof m.reflection==='string'){const a=document.createElement('details'),summary=document.createElement('summary'),text=document.createElement('p');summary.textContent='AI reflection';text.textContent=m.reflection;a.append(summary,text);card.append(a);}
+ if(typeof m.reflection==='string'){const a=document.createElement('details'),summary=document.createElement('summary'),text=document.createElement('p');summary.textContent='Reflection';text.textContent=m.reflection;a.append(summary,text);card.append(a);}
  const b=document.createElement('button');b.className='memory-delete';b.textContent='Delete moment';b.onclick=()=>{pendingDelete=m.id;openDialog('deleteDialog');};card.append(b);list.append(card);}}
 $('confirmDelete').onclick=()=>{if(persist(memories.filter(m=>m.id!==pendingDelete))){renderMemories();$('deleteDialog').close();notify('Moment deleted.');pendingDelete=null;}};
 $('rememberDevice').onchange=e=>{try{if(e.target.checked)localStorage.setItem(STORAGE_KEY,JSON.stringify(memories));else localStorage.removeItem(STORAGE_KEY);deviceStorage=e.target.checked;storageLabel();}catch{e.target.checked=deviceStorage;notify('Could not change device storage.');}};
 $('closeReflection').onclick=()=>{$('reflectionPanel').hidden=true;};
-function setBusy(v){busy=v;for(const id of ['continueButton','contextSubmit','reviseAI','saveMemory','emotionInput','context','correction'])$(id).disabled=v;$('continueButton').disabled=v||!input.value.trim();}
-async function askAI(revise=false){if(busy||!window.introReady)return;
- const feeling=input.value.trim(),context=$('context').value.trim(),correction=revise?$('correction').value.trim():'';
- if(!feeling){input.focus();return;}if(revise&&!correction){$('correction').focus();return;}
- $('reflectionPanel').hidden=false;setBusy(true);$('aiAvailability').textContent='Reflecting…';$('feedbackActions').hidden=true;
- try{const r=await fetch('/api/reflect',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({feeling,context,correction,previous:revise?reflection:'',consent:true}),signal:AbortSignal.timeout(35000)});const d=await r.json();if(!r.ok)throw Error(d.error||'Reflection unavailable.');
- if(typeof d.reflection!=='string'||!d.reflection.trim())throw Error('No reflection was returned. Try again.');
- reflection=d.reflection;$('aiOutput').textContent=reflection;$('aiAvailability').textContent='';$('feedbackActions').hidden=false;$('correctionBlock').hidden=true;window.digitalPulse?.(selected?.color||'#b6c0b8');
- }catch(e){$('aiAvailability').textContent=e.name==='TimeoutError'?'The request timed out. You can try again.':e.message||'AI reflection unavailable. Try again.';}finally{setBusy(false);}}
-$('contextSubmit').onclick=()=>askAI();$('context').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();askAI();}});$('reviseAI').onclick=()=>askAI(true);
-$('fits').onclick=()=>{$('feedbackActions').hidden=true;notify('Reflection kept with this entry. Save the moment when you’re ready.');};
-$('notQuite').onclick=()=>{$('correctionBlock').hidden=false;$('correction').focus();};
+const prompts=['What feels most important about this moment?','What would you like to remember about how you feel right now?','What would feel supportive to you right now?','Is there anything else you are feeling alongside this?'];
+function showReflection(alternate=false){if(!window.introReady||!input.value.trim())return;if(alternate)promptIndex=(promptIndex+1)%prompts.length;reflection=prompts[promptIndex];$('reflectionPanel').hidden=false;$('aiAvailability').textContent='';$('aiOutput').textContent=reflection;$('feedbackActions').hidden=false;$('correctionBlock').hidden=true;}
+$('contextSubmit').onclick=()=>{showReflection();window.digitalPulse?.(colorsFor(input.value));};
+$('context').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();$('contextSubmit').click();}});
+$('fits').onclick=()=>{$('feedbackActions').hidden=true;};
+$('notQuite').onclick=()=>showReflection(true);
 storageLabel();

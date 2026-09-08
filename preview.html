@@ -40,14 +40,14 @@
   <section id="contextStep" hidden>
    <label for="context">What happened?</label>
    <textarea id="context" rows="3" maxlength="4000" placeholder="Write what’s on your mind."></textarea>
-   <div class="actions"><button id="contextSubmit" class="primary" aria-label="Submit context for AI reflection">↵</button><button id="saveMemory">Save moment</button></div>
+   <div class="actions"><button id="contextSubmit" class="primary" aria-label="Save context">↵</button><button id="saveMemory">Save moment</button></div>
   </section>
   <section id="reflectionPanel" aria-labelledby="reflectionTitle" hidden>
-   <div class="panel-heading"><h2 id="reflectionTitle" class="sr-only">Response from AI</h2><button id="closeReflection" aria-label="Close response">×</button></div>
+   <div class="panel-heading"><h2 id="reflectionTitle" class="sr-only">Reflection prompt</h2><button id="closeReflection" aria-label="Close response">×</button></div>
    <p id="aiAvailability" role="status"></p>
 
    <div id="aiOutput" role="status" aria-live="polite"></div>
-   <div id="feedbackActions" hidden><p class="small">Does that fit your experience?</p><div class="actions"><button id="fits">Yes, that fits</button><button id="notQuite">Not quite</button></div></div>
+   <div id="feedbackActions" hidden><div class="actions"><button id="fits">Keep this prompt</button><button id="notQuite">Another prompt</button></div></div>
    <div id="correctionBlock" hidden><label for="correction">What did it miss?</label><textarea id="correction" maxlength="1000" rows="2"></textarea><button id="reviseAI" class="primary">Reconsider ↗</button></div>
   </section>
  </section>
@@ -60,20 +60,21 @@
  <div id="memoryList"></div>
 </dialog>
 <dialog id="accountDialog" aria-labelledby="accountTitle"><button class="close" data-close aria-label="Close account">×</button><p class="eyebrow">ACCOUNT PREVIEW</p><h2 id="accountTitle">Your own space.</h2><p>Account creation and sign-in are planned for the next version. This interface study does not collect email addresses or passwords.</p><p>For now, you can keep memories for this session, or choose to save them on this device. They won’t sync between devices.</p><button class="primary" data-close>Continue without an account</button></dialog>
-<dialog id="aboutDialog" aria-labelledby="aboutTitle"><button class="close" data-close aria-label="Close about">×</button><p class="eyebrow">ABOUT AFTERGLOW</p><h2 id="aboutTitle">A place to name it.</h2><p>Choose a feeling, add the context you want to remember, and come back to it later. Your choices shape the colors on the screen.</p><p>Use your own words. The palette is expressive, not a scientific scale. No feeling is scored as good or bad.</p><p>This prototype is a reflective journal, not a diagnostic tool or a mental health treatment. Submitting an entry sends its text to OpenAI to generate a response. AI responses may be inaccurate. Entries are not monitored.</p><p class="research">Research background: <a href="https://pubmed.ncbi.nlm.nih.gov/17576282/" target="_blank" rel="noopener noreferrer">Putting feelings into words (2007)</a>.</p><button class="primary" data-close>Back to my sky</button></dialog>
+<dialog id="aboutDialog" aria-labelledby="aboutTitle"><button class="close" data-close aria-label="Close about">×</button><p class="eyebrow">ABOUT AFTERGLOW</p><h2 id="aboutTitle">A place to name it.</h2><p>Choose a feeling, add the context you want to remember, and come back to it later. Your choices shape the colors on the screen.</p><p>Use your own words. The palette is expressive, not a scientific scale. No feeling is scored as good or bad.</p><p>This prototype is a reflective journal, not a diagnostic tool or a mental health treatment. Reflection questions are prewritten journal prompts. Entries are processed in this browser and are not sent to an AI service. Entries are not monitored.</p><p class="research">Research background: <a href="https://pubmed.ncbi.nlm.nih.gov/17576282/" target="_blank" rel="noopener noreferrer">Putting feelings into words (2007)</a>.</p><button class="primary" data-close>Back to my sky</button></dialog>
 <dialog id="deleteDialog" aria-labelledby="deleteTitle"><h2 id="deleteTitle">Delete this moment?</h2><p>This removes it from your collection and any device copy. This cannot be undone.</p><div class="dialog-actions"><button data-close>Keep it</button><button id="confirmDelete" class="danger">Delete moment</button></div></dialog>
 <script>globalThis.IntroTiming=Object.freeze({speed:2,durationMs:8000,canType:elapsed=>elapsed>=8000,settle:elapsed=>Math.min(1,Math.max(0,(elapsed-9500)/4000))});
 </script>
 <script>'use strict';
 const $=id=>document.getElementById(id),input=$('emotionInput');
 const STORAGE_KEY='afterglow.memories.v1';
-let selected=null,memories=[],deviceStorage=false,pendingDelete=null,toastTimer,reflection='',busy=false;
+let promptIndex=0;let selected=null,memories=[],deviceStorage=false,pendingDelete=null,toastTimer,reflection='',busy=false;
 function notify(text){$('status').textContent=text;$('status').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('status').hidden=true,4500);}
 try{const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');if(Array.isArray(saved)){memories=saved.filter(m=>m&&typeof m.id==='string'&&typeof m.emotion==='string'&&m.emotion.length<=160&&typeof m.context==='string'&&Number.isFinite(Date.parse(m.at))).slice(0,500);deviceStorage=true;}}catch{notify('Device storage is unavailable. Entries will stay in this session.');}
 function storageLabel(){$('storageLabel').textContent=deviceStorage?'Saved on this device':'Session only';$('rememberDevice').checked=deviceStorage;$('count').textContent=memories.length;}
 function persist(next){if(deviceStorage){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(next));}catch{notify('Could not save on this device. Your changes have not been applied.');return false;}}memories=next;storageLabel();return true;}
-function colorFor(name){const colors={peaceful:'#87bfa0',calm:'#87bfa0',stressed:'#c9bd7d',furious:'#b47373',angry:'#b47373',annoyed:'#c5a17e',sad:'#8fa6ba',hopeful:'#b0a9bb',affectionate:'#ba9eae'};return colors[name.toLowerCase().trim()]||'#b6c0b8';}
-function continueEntry(){if(busy||!window.introReady||!input.value.trim())return;selected={name:input.value.trim(),color:colorFor(input.value)};document.documentElement.style.setProperty('--accent',selected.color);$('contextStep').hidden=false;$('stepLabel').textContent='02 / CONTEXT';window.setDigitalScene?.('context');window.digitalPulse?.(selected.color);$('reflectionPanel').hidden=false;askAI();}
+function colorsFor(name){const palette={peaceful:'#5dd6a1',peace:'#5dd6a1',calm:'#5dd6a1',relaxed:'#5dd6a1',stressed:'#e2c45c',stress:'#e2c45c',anxious:'#e2c45c',worried:'#e2c45c',furious:'#e06b74',angry:'#e06b74',anger:'#e06b74',annoyed:'#eaa26a',frustrated:'#eaa26a',sad:'#78aee2',lonely:'#78aee2',hopeful:'#b49be5',happy:'#b49be5',joyful:'#b49be5',affectionate:'#df98bc',loved:'#df98bc',grateful:'#df98bc'};const words=name.toLowerCase().match(/[a-z']+/g)||[];const colors=words.flatMap((word,i)=>palette[word]&&!words.slice(Math.max(0,i-2),i).some(w=>['not','never',"don't",'less'].includes(w))?[palette[word]]:[]);return [...new Set(colors)].slice(0,3).length?[...new Set(colors)].slice(0,3):['#92a9ca','#b6a1c7'];}
+function colorFor(name){return colorsFor(name)[0];}
+function continueEntry(){if(busy||!window.introReady||!input.value.trim())return;selected={name:input.value.trim(),color:colorFor(input.value)};document.documentElement.style.setProperty('--accent',selected.color);$('contextStep').hidden=false;$('stepLabel').textContent='02 / CONTEXT';window.setDigitalScene?.('context');window.digitalPulse?.(colorsFor(input.value));$('reflectionPanel').hidden=false;showReflection();}
 $('continueButton').onclick=continueEntry;input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){e.preventDefault();continueEntry();}});
 input.addEventListener('input',()=>{$('continueButton').disabled=!input.value.trim();if(selected)selected={name:input.value.trim(),color:colorFor(input.value)};clearReflection();});
 function clearReflection(){reflection='';$('aiOutput').textContent='';$('feedbackActions').hidden=true;$('correctionBlock').hidden=true;$('correction').value='';}
@@ -91,29 +92,23 @@ $('saveMemory').onclick=()=>{if(busy)return;if(!input.value.trim()){input.focus(
  window.digitalPulse?.(selected?.color||'#b6c0b8');input.value='';$('context').value='';selected=null;$('contextStep').hidden=true;$('reflectionPanel').hidden=true;$('continueButton').disabled=true;clearReflection();$('stepLabel').textContent='01 / CHECK IN';window.setDigitalScene?.('prompt');notify(deviceStorage?'Moment saved on this device.':'Moment saved for this session.');input.focus();};
 function renderMemories(){const list=$('memoryList');list.replaceChildren();if(!memories.length){const e=document.createElement('div');e.className='empty-state';const h=document.createElement('h3');h.textContent='Your collection starts here.';const p=document.createElement('p');p.textContent='Saved moments will appear here.';e.append(h,p);list.append(e);return;}
  for(const m of memories){const card=document.createElement('article');card.className='memory-card';const head=document.createElement('div');head.className='memory-heading';const h=document.createElement('h3');h.textContent=m.emotion;const t=document.createElement('time');t.dateTime=m.at;t.textContent=new Date(m.at).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});head.append(h,t);const p=document.createElement('p');p.textContent=m.context||'No context added.';card.append(head,p);
- if(typeof m.reflection==='string'){const a=document.createElement('details'),summary=document.createElement('summary'),text=document.createElement('p');summary.textContent='AI reflection';text.textContent=m.reflection;a.append(summary,text);card.append(a);}
+ if(typeof m.reflection==='string'){const a=document.createElement('details'),summary=document.createElement('summary'),text=document.createElement('p');summary.textContent='Reflection';text.textContent=m.reflection;a.append(summary,text);card.append(a);}
  const b=document.createElement('button');b.className='memory-delete';b.textContent='Delete moment';b.onclick=()=>{pendingDelete=m.id;openDialog('deleteDialog');};card.append(b);list.append(card);}}
 $('confirmDelete').onclick=()=>{if(persist(memories.filter(m=>m.id!==pendingDelete))){renderMemories();$('deleteDialog').close();notify('Moment deleted.');pendingDelete=null;}};
 $('rememberDevice').onchange=e=>{try{if(e.target.checked)localStorage.setItem(STORAGE_KEY,JSON.stringify(memories));else localStorage.removeItem(STORAGE_KEY);deviceStorage=e.target.checked;storageLabel();}catch{e.target.checked=deviceStorage;notify('Could not change device storage.');}};
 $('closeReflection').onclick=()=>{$('reflectionPanel').hidden=true;};
-function setBusy(v){busy=v;for(const id of ['continueButton','contextSubmit','reviseAI','saveMemory','emotionInput','context','correction'])$(id).disabled=v;$('continueButton').disabled=v||!input.value.trim();}
-async function askAI(revise=false){if(busy||!window.introReady)return;
- const feeling=input.value.trim(),context=$('context').value.trim(),correction=revise?$('correction').value.trim():'';
- if(!feeling){input.focus();return;}if(revise&&!correction){$('correction').focus();return;}
- $('reflectionPanel').hidden=false;setBusy(true);$('aiAvailability').textContent='Reflecting…';$('feedbackActions').hidden=true;
- try{const r=await fetch('/api/reflect',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({feeling,context,correction,previous:revise?reflection:'',consent:true}),signal:AbortSignal.timeout(35000)});const d=await r.json();if(!r.ok)throw Error(d.error||'Reflection unavailable.');
- if(typeof d.reflection!=='string'||!d.reflection.trim())throw Error('No reflection was returned. Try again.');
- reflection=d.reflection;$('aiOutput').textContent=reflection;$('aiAvailability').textContent='';$('feedbackActions').hidden=false;$('correctionBlock').hidden=true;window.digitalPulse?.(selected?.color||'#b6c0b8');
- }catch(e){$('aiAvailability').textContent=e.name==='TimeoutError'?'The request timed out. You can try again.':e.message||'AI reflection unavailable. Try again.';}finally{setBusy(false);}}
-$('contextSubmit').onclick=()=>askAI();$('context').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();askAI();}});$('reviseAI').onclick=()=>askAI(true);
-$('fits').onclick=()=>{$('feedbackActions').hidden=true;notify('Reflection kept with this entry. Save the moment when you’re ready.');};
-$('notQuite').onclick=()=>{$('correctionBlock').hidden=false;$('correction').focus();};
+const prompts=['What feels most important about this moment?','What would you like to remember about how you feel right now?','What would feel supportive to you right now?','Is there anything else you are feeling alongside this?'];
+function showReflection(alternate=false){if(!window.introReady||!input.value.trim())return;if(alternate)promptIndex=(promptIndex+1)%prompts.length;reflection=prompts[promptIndex];$('reflectionPanel').hidden=false;$('aiAvailability').textContent='';$('aiOutput').textContent=reflection;$('feedbackActions').hidden=false;$('correctionBlock').hidden=true;}
+$('contextSubmit').onclick=()=>{showReflection();window.digitalPulse?.(colorsFor(input.value));};
+$('context').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();$('contextSubmit').click();}});
+$('fits').onclick=()=>{$('feedbackActions').hidden=true;};
+$('notQuite').onclick=()=>showReflection(true);
 storageLabel();
 </script>
 <script>'use strict';
 const canvas=$('sky'),ctx=canvas.getContext('2d'),media=matchMedia('(prefers-reduced-motion: reduce)');
 const startedAt=performance.now();
-let width=innerWidth,height=innerHeight,points=[],targets=[],textLayer=null,clock=0,last=0,frame=0,scene='gathering',pulse=-1,tint='#cbd3cc',paused=media.matches;
+let width=innerWidth,height=innerHeight,points=[],targets=[],textLayer=null,clock=0,last=0,frame=0,scene='gathering',pulse=-1,tint='#cbd3cc',paused=media.matches,palette=['#92a9ca','#b6a1c7'],colored=false;
 const mouse={x:.5,y:.5},camera={x:.5,y:.5};
 window.introReady=false;
 function setup(){width=innerWidth;height=innerHeight;const d=Math.min(devicePixelRatio||1,2);canvas.width=width*d;canvas.height=height*d;ctx.setTransform(d,0,0,d,0,0);
@@ -140,11 +135,12 @@ function unlock(){
  window.introReady=true;scene='prompt';document.body.dataset.scene=scene;$('main').inert=false;$('wakeSky').hidden=true;$('introStatus').textContent='Ready. You can now type your entry.';
  draw(0);
 }
-window.digitalPulse=color=>{tint=color;pulse=clock;};
+window.digitalPulse=colors=>{palette=Array.isArray(colors)?colors:[colors];tint=palette[0];colored=true;pulse=clock;draw(0);};
 function draw(dt){
  const elapsed=(performance.now()-startedAt)*1.875,settle=IntroTiming.settle(elapsed),smooth=settle*settle*(3-2*settle);
  camera.x+=(mouse.x-camera.x)*Math.min(1,dt*.001);camera.y+=(mouse.y-camera.y)*Math.min(1,dt*.001);
- const kick=pulse<0?0:Math.max(0,1-(clock-pulse)/1800);
+ const age=pulse<0?99999:clock-pulse;
+ const kick=paused?0:Math.sin(Math.PI*Math.min(1,age/5200));
  ctx.clearRect(0,0,width,height);ctx.fillStyle='#040505';ctx.fillRect(0,0,width,height);
  const seconds=elapsed*IntroTiming.speed/1000;
  const flight=paused?0:Math.pow(Math.max(0,Math.sin(Math.PI*Math.min(1,seconds/19))),3);
@@ -170,12 +166,25 @@ function draw(dt){
   }
   p.px=x;p.py=y;
   if(x<0||x>width||y<0||y>height)continue;
+  const starColor=palette[j%palette.length];
+  if(colored&&window.introReady&&!paused&&p.s>.67){
+   const wave=Math.sin(Math.PI*Math.min(1,Math.max(0,(age-p.s*600)/4200)));
+   const energy=Math.max(0,wave)*(0.7+p.s*.3)+near*.16;
+   if(energy>.015){
+    const dx=x-width*.5,dy=y-height*.5,len=Math.hypot(dx,dy)||1;
+    const reach=(35+150*p.s)*energy*Math.min(1.6,scale);
+    const tx=x-dx/len*reach,ty=y-dy/len*reach;
+    const gradient=ctx.createLinearGradient(tx,ty,x,y);gradient.addColorStop(0,starColor+'00');gradient.addColorStop(.65,starColor+'80');gradient.addColorStop(1,starColor);
+    ctx.strokeStyle=gradient;ctx.globalAlpha=energy*.7;ctx.lineWidth=.75+p.s*.6;
+    ctx.beginPath();ctx.moveTo(tx,ty);ctx.quadraticCurveTo((tx+x)/2-dy/len*reach*.15,(ty+y)/2+dx/len*reach*.15,x,y);ctx.stroke();
+   }
+  }
   if(flight>.015&&!paused&&progress<.1){
    const trail=flight*(.012+.032*scale)*(1-smooth);
    ctx.globalAlpha=Math.min(1,alpha*.85);ctx.strokeStyle='#cbd9d4';ctx.lineWidth=.45+Math.pow(p.s,8)*.4;
    ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-(baseX-width/2)*trail,y-(baseY-height/2)*trail);ctx.stroke();
   }
-  ctx.globalAlpha=Math.min(1,alpha);ctx.fillStyle=forming?'#555b58':kick>0?tint:'#f3fff8';
+  ctx.globalAlpha=Math.min(1,alpha);ctx.fillStyle=forming?'#555b58':colored&&p.s>.4?starColor:'#f3fff8';
   const size=forming?.95:.85+Math.pow(p.s,6)*.8;
   if(forming){ctx.beginPath();ctx.arc(x,y,size*.5,0,Math.PI*2);ctx.fill();}else ctx.fillRect(x,y,size,size);
  }
@@ -184,7 +193,7 @@ function draw(dt){
   const fade=1-Math.min(1,Math.max(0,(elapsed-11250)/3750));
   ctx.globalAlpha=(reveal*reveal*(3-2*reveal))*fade;ctx.drawImage(textLayer,0,0);
  }
- if(kick>0){ctx.globalAlpha=kick*.11;ctx.fillStyle=tint;ctx.fillRect(width*(1-kick),0,.7,height);}
+ if(colored&&window.introReady){const glow=ctx.createRadialGradient(width*.5,height*.55,0,width*.5,height*.55,Math.max(width,height)*.7);glow.addColorStop(0,tint+'00');glow.addColorStop(.65,tint+'0a');glow.addColorStop(1,tint+'00');ctx.globalAlpha=paused?.5:.4+kick*.6;ctx.fillStyle=glow;ctx.fillRect(0,0,width,height);}
  ctx.globalAlpha=1;
 }
 function animate(now){const dt=Math.min(40,last?now-last:16);last=now;clock+=dt;draw(dt);if(!paused&&!document.hidden)frame=requestAnimationFrame(animate);}

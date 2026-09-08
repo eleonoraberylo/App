@@ -1,7 +1,7 @@
 'use strict';
 const canvas=$('sky'),ctx=canvas.getContext('2d'),media=matchMedia('(prefers-reduced-motion: reduce)');
 const startedAt=performance.now();
-let width=innerWidth,height=innerHeight,points=[],targets=[],textLayer=null,clock=0,last=0,frame=0,scene='gathering',pulse=-1,tint='#cbd3cc',paused=media.matches;
+let width=innerWidth,height=innerHeight,points=[],targets=[],textLayer=null,clock=0,last=0,frame=0,scene='gathering',pulse=-1,tint='#cbd3cc',paused=media.matches,palette=['#92a9ca','#b6a1c7'],colored=false;
 const mouse={x:.5,y:.5},camera={x:.5,y:.5};
 window.introReady=false;
 function setup(){width=innerWidth;height=innerHeight;const d=Math.min(devicePixelRatio||1,2);canvas.width=width*d;canvas.height=height*d;ctx.setTransform(d,0,0,d,0,0);
@@ -28,11 +28,12 @@ function unlock(){
  window.introReady=true;scene='prompt';document.body.dataset.scene=scene;$('main').inert=false;$('wakeSky').hidden=true;$('introStatus').textContent='Ready. You can now type your entry.';
  draw(0);
 }
-window.digitalPulse=color=>{tint=color;pulse=clock;};
+window.digitalPulse=colors=>{palette=Array.isArray(colors)?colors:[colors];tint=palette[0];colored=true;pulse=clock;draw(0);};
 function draw(dt){
  const elapsed=(performance.now()-startedAt)*1.875,settle=IntroTiming.settle(elapsed),smooth=settle*settle*(3-2*settle);
  camera.x+=(mouse.x-camera.x)*Math.min(1,dt*.001);camera.y+=(mouse.y-camera.y)*Math.min(1,dt*.001);
- const kick=pulse<0?0:Math.max(0,1-(clock-pulse)/1800);
+ const age=pulse<0?99999:clock-pulse;
+ const kick=paused?0:Math.sin(Math.PI*Math.min(1,age/5200));
  ctx.clearRect(0,0,width,height);ctx.fillStyle='#040505';ctx.fillRect(0,0,width,height);
  const seconds=elapsed*IntroTiming.speed/1000;
  const flight=paused?0:Math.pow(Math.max(0,Math.sin(Math.PI*Math.min(1,seconds/19))),3);
@@ -58,12 +59,25 @@ function draw(dt){
   }
   p.px=x;p.py=y;
   if(x<0||x>width||y<0||y>height)continue;
+  const starColor=palette[j%palette.length];
+  if(colored&&window.introReady&&!paused&&p.s>.67){
+   const wave=Math.sin(Math.PI*Math.min(1,Math.max(0,(age-p.s*600)/4200)));
+   const energy=Math.max(0,wave)*(0.7+p.s*.3)+near*.16;
+   if(energy>.015){
+    const dx=x-width*.5,dy=y-height*.5,len=Math.hypot(dx,dy)||1;
+    const reach=(35+150*p.s)*energy*Math.min(1.6,scale);
+    const tx=x-dx/len*reach,ty=y-dy/len*reach;
+    const gradient=ctx.createLinearGradient(tx,ty,x,y);gradient.addColorStop(0,starColor+'00');gradient.addColorStop(.65,starColor+'80');gradient.addColorStop(1,starColor);
+    ctx.strokeStyle=gradient;ctx.globalAlpha=energy*.7;ctx.lineWidth=.75+p.s*.6;
+    ctx.beginPath();ctx.moveTo(tx,ty);ctx.quadraticCurveTo((tx+x)/2-dy/len*reach*.15,(ty+y)/2+dx/len*reach*.15,x,y);ctx.stroke();
+   }
+  }
   if(flight>.015&&!paused&&progress<.1){
    const trail=flight*(.012+.032*scale)*(1-smooth);
    ctx.globalAlpha=Math.min(1,alpha*.85);ctx.strokeStyle='#cbd9d4';ctx.lineWidth=.45+Math.pow(p.s,8)*.4;
    ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-(baseX-width/2)*trail,y-(baseY-height/2)*trail);ctx.stroke();
   }
-  ctx.globalAlpha=Math.min(1,alpha);ctx.fillStyle=forming?'#555b58':kick>0?tint:'#f3fff8';
+  ctx.globalAlpha=Math.min(1,alpha);ctx.fillStyle=forming?'#555b58':colored&&p.s>.4?starColor:'#f3fff8';
   const size=forming?.95:.85+Math.pow(p.s,6)*.8;
   if(forming){ctx.beginPath();ctx.arc(x,y,size*.5,0,Math.PI*2);ctx.fill();}else ctx.fillRect(x,y,size,size);
  }
@@ -72,7 +86,7 @@ function draw(dt){
   const fade=1-Math.min(1,Math.max(0,(elapsed-11250)/3750));
   ctx.globalAlpha=(reveal*reveal*(3-2*reveal))*fade;ctx.drawImage(textLayer,0,0);
  }
- if(kick>0){ctx.globalAlpha=kick*.11;ctx.fillStyle=tint;ctx.fillRect(width*(1-kick),0,.7,height);}
+ if(colored&&window.introReady){const glow=ctx.createRadialGradient(width*.5,height*.55,0,width*.5,height*.55,Math.max(width,height)*.7);glow.addColorStop(0,tint+'00');glow.addColorStop(.65,tint+'0a');glow.addColorStop(1,tint+'00');ctx.globalAlpha=paused?.5:.4+kick*.6;ctx.fillStyle=glow;ctx.fillRect(0,0,width,height);}
  ctx.globalAlpha=1;
 }
 function animate(now){const dt=Math.min(40,last?now-last:16);last=now;clock+=dt;draw(dt);if(!paused&&!document.hidden)frame=requestAnimationFrame(animate);}
