@@ -30,24 +30,15 @@ function unlock(){
 }
 window.digitalPulse=colors=>{if(!colors||Array.isArray(colors)&&!colors.length)return;const color=Array.isArray(colors)?colors[0]:colors;previousColors=[...currentColors];palette=[...currentColors];activeLane=parseInt(color.slice(1),16)%14;palette[activeLane]=color;tint=color;colored=true;pulse=clock;draw(0);};
 const laneHeights=Array.from({length:14},(_,i)=>.06+i*.067);
-function buzzFor(i){if(paused)return 0;const phase=clock*.0007*(.7+(i%5)*.13)+i*2.19;return Math.pow(Math.max(0,Math.sin(phase)),16);}
+function buzzFor(i){if(paused)return 0;const age=clock-pulse;const extra=i===activeLane&&pulse>=0&&age<6000?Math.sin(Math.PI*age/6000):0;return .12+extra*2.5;}
 function laneY(i,x=width*.5){
- const t=clock*.001,phase=i*1.79,u=x/width;
- const drift=Math.sin(u*(4+i%3)+t*(.16+(i%4)*.07)+phase)*height*(.007+(i%3)*.003);
- const swell=Math.sin(u*9-t*.29+phase*.7)*Math.sin(t*.11+phase)*height*.008;
- const buzz=buzzFor(i)*(Math.sin(x*.11+t*39+phase)+Math.sin(x*.047-t*27))*1.6;
- let shock=0,envelope=0;const age=clock-pulse;
- if(!paused&&i===activeLane&&pulse>=0&&age<4800){
-  const spacing=Math.max(170,Math.min(320,width*.32));
-  const cycle=((x+age*.15)/spacing)%1;
-  const bump=(center,spread)=>Math.exp(-Math.pow((cycle-center)/spread,2));
-  // Screen y grows downward: R rises, S drops, then the rounded T rises.
-  const shape=-.09*bump(.14,.045)+.075*bump(.255,.028)-1.0*bump(.30,.017)+.92*bump(.343,.022)-.32*bump(.61,.087);
-  envelope=Math.min(1,age/140)*Math.min(1,(4800-age)/1000);
-  const amplitude=Math.min(85,height*.12,height*Math.min(laneHeights[i],1-laneHeights[i])*.78);
-  shock=shape*amplitude*envelope;
- }
- return height*laneHeights[i]+ (drift+swell+buzz)*(1-envelope*.88)+shock-(camera.y-.5)*(5+i);
+ const spacing=Math.max(200,Math.min(420,width*.4));
+ const phase=x/spacing*Math.PI*2-clock*.0032+i*.46;
+ // Continuous rhythm from the first frame; submission never resets its phase.
+ const rhythm=(Math.sin(phase)+.24*Math.sin(phase*3))/1.12;
+ const amplitude=Math.min(42,height*.043)*( .75+(i%3)*.12);
+ const buzz=buzzFor(i)*(Math.sin(x*.1-clock*.04+i)+.45*Math.sin(x*.19+clock*.033))*1.2;
+ return height*laneHeights[i]+rhythm*amplitude+buzz-(camera.y-.5)*(5+i);
 }
 function blendColor(a,b,t){const channels=[1,3,5].map(i=>Math.round(parseInt(a.slice(i,i+2),16)*(1-t)+parseInt(b.slice(i,i+2),16)*t).toString(16).padStart(2,'0'));return '#'+channels.join('');}
 function lightBand(x,y,w,h,color,strength){
@@ -61,7 +52,7 @@ function draw(dt){
  const age=pulse<0?99999:clock-pulse,kick=paused?0:Math.sin(Math.PI*Math.min(1,age/6000));
  for(let i=0;i<14;i++)currentColors[i]=blendColor(previousColors[i]||currentColors[i],palette[i%palette.length],paused?1:Math.min(1,age/250));
  ctx.globalAlpha=1;ctx.fillStyle='#040506';ctx.fillRect(0,0,width,height);
- const arrival=paused?1:Math.min(1,(performance.now()-startedAt)/1800);
+ const arrival=1;
  // Each star and its optical trail share a horizontal layer and velocity.
  for(let i=0;i<14;i++){
   const y=laneY(i),color=currentColors[i],sweep=Math.sin(clock*.00007+i*2),localKick=i===activeLane?kick:0,buzz=buzzFor(i);
@@ -69,14 +60,14 @@ function draw(dt){
   const dim=laneHeights[i]>.38&&laneHeights[i]<.62?.26:.65;
   ctx.beginPath();for(let px=-30;px<=width+30;px+=(i===activeLane?2:5)){const py=laneY(i,px);if(px===-30)ctx.moveTo(px,py);else ctx.lineTo(px,py);}
   const ribbon=ctx.createLinearGradient(0,0,width,0);ribbon.addColorStop(0,color+'00');ribbon.addColorStop(.25,color+'90');ribbon.addColorStop(.65,color+'b0');ribbon.addColorStop(1,color+'00');ctx.strokeStyle=ribbon;
-  ctx.globalAlpha=arrival*dim*(.04+localKick*.08+buzz*.015);ctx.lineWidth=16;ctx.stroke();
-  ctx.globalAlpha=arrival*dim*(.1+localKick*.15);ctx.lineWidth=4;ctx.stroke();
-  ctx.globalAlpha=arrival*dim*(.26+localKick*.3+buzz*.06);ctx.lineWidth=.8;ctx.stroke();
+  ctx.globalAlpha=arrival*dim*.065;ctx.lineWidth=16;ctx.stroke();
+  ctx.globalAlpha=arrival*dim*.14;ctx.lineWidth=4;ctx.stroke();
+  ctx.globalAlpha=arrival*dim*.36;ctx.lineWidth=.8;ctx.stroke();
 
  }
  for(let j=0;j<points.length;j++){
   const p=points[j],layer=p.lane,depth=.35+p.s*.8,starKick=layer===activeLane?kick:0;
-  if(!paused)p.travel=(p.travel+dt*(.000006+depth*.000009)*(1+starKick*3+buzzFor(layer)*.8))%1;
+  if(!paused)p.travel=(p.travel+dt*(.000006+depth*.000009)*(1+starKick*.6))%1;
   const x0=p.travel*(width+160)-80-(camera.x-.5)*22*depth;
   const inBand=j%3!==0;
   const y0=inBand?laneY(layer,x0)+p.offset*height*.06:height*(p.y+1)/2;
@@ -92,7 +83,7 @@ function draw(dt){
   alpha*=arrival;
   if(x<0||x>width||y<0||y>height)continue;
   if(inBand&&p.s>.82&&progress<.08){
-   const reach=(22+p.s*90)*depth*(1+starKick*1.8),tail=ctx.createLinearGradient(x-reach,y,x+reach*.12,y);
+   const reach=(22+p.s*90)*depth*(1+starKick*.35),tail=ctx.createLinearGradient(x-reach,y,x+reach*.12,y);
    tail.addColorStop(0,color+'00');tail.addColorStop(.84,color+'75');tail.addColorStop(.9,color+'b0');tail.addColorStop(1,color+'00');
    ctx.strokeStyle=tail;ctx.lineWidth=.5;ctx.globalAlpha=alpha*.7;ctx.beginPath();ctx.moveTo(x-reach,laneY(layer,x-reach)+p.offset*height*.06);ctx.quadraticCurveTo(x-reach*.3,y,x,y);ctx.stroke();
   }
