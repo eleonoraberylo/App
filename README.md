@@ -38,3 +38,7 @@ Calm, nearly level strands now take turns producing a traveling piecewise-linear
 
 ## Dream palette and patterns
 Rose, blue, butter yellow and lilac strands have varied weights and localized angular buzz. 44 recognized labels. Follow-up questions and suggestions use prewritten feeling/topic rules, with no AI calls. How am I doing shows 7/30-day counts from existing session/device memories; it does not infer severity or diagnose. Optional Notifications API alerts run only after saving while the page is open, at most once per visit/day. Three tiredness/high-energy entries in 7 days trigger an invitation to reflect, not a medical threshold. Background push, cloud history and account sync remain unimplemented.
+
+
+## Pale resting strands
+The intro lasts 13 seconds with a 6.5-second strand fade-in. Resting strands are thinner, desaturated and move approximately 25% slower. Submitting a feeling energizes its strand immediately: saturation rises over 100ms, holds through the 1.4-second buzz, then fades to the resting palette by 4 seconds. Reduced motion keeps the resting palette.
