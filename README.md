@@ -34,3 +34,7 @@ All strands now follow a continuous, smooth repeating downward/upward waveform f
 
 ## Angular sequential activation
 Calm, nearly level strands now take turns producing a traveling piecewise-linear cardiogram: one strand per 1.55-second slot, with a quiet interval. Submission temporarily takes priority with a stronger 1.4-second impulse only on the selected emotion strand, followed by ambient sequencing. No synchronized broad sine waves or brightness flashing. Saturation and steady line visibility are increased; typography remains muted.
+
+
+## Dream palette and patterns
+Rose, blue, butter yellow and lilac strands have varied weights and localized angular buzz. 44 recognized labels. Follow-up questions and suggestions use prewritten feeling/topic rules, with no AI calls. How am I doing shows 7/30-day counts from existing session/device memories; it does not infer severity or diagnose. Optional Notifications API alerts run only after saving while the page is open, at most once per visit/day. Three tiredness/high-energy entries in 7 days trigger an invitation to reflect, not a medical threshold. Background push, cloud history and account sync remain unimplemented.
